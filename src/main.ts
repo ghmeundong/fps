@@ -38,7 +38,7 @@ const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
 scene.fog = new THREE.Fog('#0b0e12', 14, 52)
-const physicsWorld = new RAPIER.World({ x: 0, y: -9.81, z: 0 })
+const physicsWorld = new RAPIER.World({ x: 0, y: -3.5, z: 0 })
 physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(1000, 0.1, 1000).setTranslation(0, -0.1, 0))
 
 const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 60)
@@ -199,7 +199,7 @@ type Projectile = {
 const projectiles: Projectile[] = []
 const projectileMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a3', fog: false })
 const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
-const projectileVelocity = 34
+const projectileVelocity = 90
 const projectileLifetime = 3
 
 function spawnProjectile(): void {
