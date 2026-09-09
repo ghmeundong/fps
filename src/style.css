@@ -55,13 +55,25 @@ button { font: inherit; }
 .sensitivity-control input { width: 90px; accent-color: #e6654d; cursor: pointer; }
 .crosshair { --crosshair-gap: 14px; position: absolute; z-index: 3; inset: 50% auto auto 50%; width: 64px; height: 64px; transform: translate(-50%, -50%); }
 .crosshair::before, .crosshair::after, .crosshair span, .crosshair i { position: absolute; content: ''; background: rgba(242, 245, 244, .9); }
+.crosshair b { position: absolute; z-index: 1; width: 5px; height: 5px; top: 29.5px; left: 29.5px; border-radius: 50%; background: #f4f6f5; box-shadow: 0 0 5px rgba(244, 246, 245, .7); }
+.crosshair em { display: none; }
 .crosshair::before { width: 1px; height: 8px; top: calc(32px - var(--crosshair-gap) - 8px); left: 31px; transition: top .12s ease; } .crosshair::after { width: 1px; height: 8px; bottom: calc(32px - var(--crosshair-gap) - 8px); left: 31px; transition: bottom .12s ease; }
 .crosshair span { width: 8px; height: 1px; left: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: left .12s ease; } .crosshair i { width: 8px; height: 1px; right: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: right .12s ease; }
+.hit-marker { position: absolute; z-index: 3; inset: 50% auto auto 50%; width: 36px; height: 36px; opacity: 0; pointer-events: none; transform: translate(-50%, -50%); }
+.hit-marker i { position: absolute; width: 9px; height: 1px; background: #67d68b; box-shadow: 0 0 4px rgba(103, 214, 139, .65); transform-origin: center; }
+.hit-marker i:nth-child(1) { top: calc(50% - 10.5px); left: calc(50% - 14.5px); transform: rotate(45deg); }
+.hit-marker i:nth-child(2) { top: calc(50% - 10.5px); left: calc(50% + 5.5px); transform: rotate(-45deg); }
+.hit-marker i:nth-child(3) { top: calc(50% + 9.5px); left: calc(50% - 14.5px); transform: rotate(-45deg); }
+.hit-marker i:nth-child(4) { top: calc(50% + 9.5px); left: calc(50% + 5.5px); transform: rotate(45deg); }
 .start-button { position: absolute; z-index: 4; right: 26px; top: 24px; padding: 11px 15px; border: 1px solid #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .45); cursor: pointer; font-size: 10px; letter-spacing: 1.5px; transition: background .2s, border-color .2s; }
 .start-button:hover { border-color: #f17a61; background: rgba(170, 54, 39, .7); } .start-button span { margin-left: 12px; font-size: 14px; }
+.fullscreen-button { position: absolute; z-index: 4; top: 24px; right: 26px; width: 34px; height: 34px; display: grid; place-items: center; padding: 0; border: 1px solid #293139; color: #d8dfe1; background: rgba(17, 23, 29, .72); cursor: pointer; font-size: 21px; line-height: 1; }
+.fullscreen-button:hover { border-color: #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .6); }
 .bottombar { height: 58px; display: flex; align-items: center; justify-content: space-between; font-size: 9px; letter-spacing: 1.5px; }
+.mode-category { display: flex; align-items: center; gap: 10px; }
+.category-label { color: #ed654e; font-size: 9px; letter-spacing: 2px; }
 .mode-select { display: flex; gap: 5px; }
 .mode-button { padding: 7px 10px; border: 1px solid #293139; color: #82909a; background: transparent; cursor: pointer; font-size: 9px; letter-spacing: 1px; transition: color .2s, border-color .2s, background .2s; }
 .mode-button:hover, .mode-button.is-active { border-color: #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .45); }
 
-@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; } .session-status { display: none; } .range { min-height: 520px; } .bottombar span:last-child { display: none; } .start-button { right: 16px; top: 16px; } .range-label, .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } .mode-button { padding: 6px 7px; font-size: 8px; } }
+@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; } .session-status { display: none; } .range { min-height: 520px; } .bottombar span:last-child { display: none; } .start-button { right: 16px; top: 16px; } .fullscreen-button { top: 16px; right: 16px; } .range-label, .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } .mode-button { padding: 6px 7px; font-size: 8px; } }
