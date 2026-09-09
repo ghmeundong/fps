@@ -196,7 +196,7 @@ controls.addEventListener('lock', handleLockChange)
 controls.addEventListener('unlock', handleLockChange)
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' })
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
 renderer.shadowMap.enabled = false
 
 scene.add(new THREE.HemisphereLight('#d9e6ff', '#10151c', 2.4))
@@ -284,7 +284,7 @@ type Projectile = {
 const projectiles: Projectile[] = []
 const projectileMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a3', fog: false })
 const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
-const projectileVelocity = 90
+const projectileVelocity = 150
 const projectileLifetime = 3
 
 function spawnProjectile(direction: THREE.Vector3): void {
