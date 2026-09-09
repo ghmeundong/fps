@@ -93,6 +93,11 @@ weapon.position.copy(weaponPosition)
 weapon.rotation.copy(weaponRotation)
 camera.add(weapon)
 
+const muzzleLocalPosition = new THREE.Vector3(0, -0.14, 0)
+function getMuzzleWorldPosition(): THREE.Vector3 {
+  return weaponBarrel.localToWorld(muzzleLocalPosition.clone())
+}
+
 let aiming = false
 let recoilPitch = 0
 let recoilYaw = 0
@@ -240,7 +245,7 @@ const projectileVelocity = 90
 const projectileLifetime = 3
 
 function spawnProjectile(direction: THREE.Vector3): void {
-  weaponBarrel.getWorldPosition(shotOrigin)
+  shotOrigin.copy(getMuzzleWorldPosition())
   const bodyDescription = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(shotOrigin.x, shotOrigin.y, shotOrigin.z)
     .setLinvel(direction.x * projectileVelocity, direction.y * projectileVelocity, direction.z * projectileVelocity)
@@ -332,7 +337,7 @@ function createTracer(position: THREE.Vector3): void {
 function fireShot(): void {
   shotsFired += 1
   applyRecoil()
-  weaponBarrel.getWorldPosition(shotOrigin)
+  shotOrigin.copy(getMuzzleWorldPosition())
   camera.getWorldPosition(cameraOrigin)
   camera.getWorldDirection(shotDirection)
   cameraRight.setFromMatrixColumn(camera.matrixWorld, 0)
