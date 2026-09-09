@@ -201,14 +201,30 @@ function updateAimStats(): void {
 
 function createTracer(end: THREE.Vector3): void {
   camera.getWorldPosition(shotOrigin)
-  const tracerGeometry = new THREE.BufferGeometry().setFromPoints([shotOrigin.clone(), end.clone()])
-  const tracer = new THREE.Line(tracerGeometry, new THREE.LineBasicMaterial({ color: '#fff1a3', transparent: true, opacity: 1, depthTest: false, depthWrite: false, fog: false }))
-  tracer.renderOrder = 10
-  scene.add(tracer)
-  gsap.to(tracer.material, { opacity: 0, duration: 0.16, onComplete: () => {
-    scene.remove(tracer)
-    tracer.geometry.dispose()
-    tracer.material.dispose()
+  const tracerDirection = end.clone().sub(shotOrigin)
+  const tracerLength = tracerDirection.length()
+  const tracerCenter = shotOrigin.clone().addScaledVector(tracerDirection, 0.5)
+  const tracerGroup = new THREE.Group()
+  const tracerOuter = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.018, 0.018, tracerLength, 8),
+    new THREE.MeshBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 0.8, depthTest: false, depthWrite: false, fog: false }),
+  )
+  const tracerCore = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.007, 0.007, tracerLength, 8),
+    new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 1, depthTest: false, depthWrite: false, fog: false }),
+  )
+  tracerGroup.add(tracerOuter, tracerCore)
+  const tracerMeshes = [tracerOuter, tracerCore]
+  tracerGroup.position.copy(tracerCenter)
+  tracerGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tracerDirection.normalize())
+  tracerGroup.renderOrder = 10
+  scene.add(tracerGroup)
+  gsap.to(tracerMeshes.map((mesh) => mesh.material), { opacity: 0, duration: 0.35, onComplete: () => {
+    scene.remove(tracerGroup)
+    tracerMeshes.forEach((mesh) => {
+      mesh.geometry.dispose()
+      mesh.material.dispose()
+    })
   } })
 }
 
