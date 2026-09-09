@@ -53,7 +53,7 @@ const weaponBodyMaterial = new THREE.MeshStandardMaterial({ color: '#090a0b', ro
 const weaponSlideMaterial = new THREE.MeshStandardMaterial({ color: '#17191b', roughness: 0.27, metalness: 0.88, fog: false })
 const weaponBody = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.15, 0.52), weaponBodyMaterial)
 weaponBody.position.z = -0.18
-weaponBody.castShadow = true
+weaponBody.castShadow = false
 weapon.add(weaponBody)
 const weaponSlide = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.5), weaponSlideMaterial)
 weaponSlide.position.set(0, 0.11, -0.2)
@@ -202,27 +202,13 @@ function updateAimStats(): void {
 function createTracer(end: THREE.Vector3): void {
   camera.getWorldPosition(shotOrigin)
   const tracerGeometry = new THREE.BufferGeometry().setFromPoints([shotOrigin.clone(), end.clone()])
-  const tracer = new THREE.Line(tracerGeometry, new THREE.LineBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 0.9 }))
+  const tracer = new THREE.Line(tracerGeometry, new THREE.LineBasicMaterial({ color: '#fff1a3', transparent: true, opacity: 1, depthTest: false, depthWrite: false, fog: false }))
+  tracer.renderOrder = 10
   scene.add(tracer)
-  gsap.to(tracer.material, { opacity: 0, duration: 0.09, onComplete: () => {
+  gsap.to(tracer.material, { opacity: 0, duration: 0.16, onComplete: () => {
     scene.remove(tracer)
     tracer.geometry.dispose()
     tracer.material.dispose()
-  } })
-}
-
-function createImpact(position: THREE.Vector3): void {
-  const impact = new THREE.Mesh(
-    new THREE.SphereGeometry(0.075, 12, 8),
-    new THREE.MeshBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 1 }),
-  )
-  impact.position.copy(position)
-  scene.add(impact)
-  gsap.to(impact.scale, { x: 2.8, y: 2.8, z: 2.8, duration: 0.16, ease: 'power2.out' })
-  gsap.to(impact.material, { opacity: 0, duration: 0.18, onComplete: () => {
-    scene.remove(impact)
-    impact.geometry.dispose()
-    impact.material.dispose()
   } })
 }
 
@@ -238,7 +224,6 @@ function fireShot(): void {
   if (hit) {
     shotsHit += 1
     score += 100
-    createImpact(hit.point)
     impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
     target.position.copy(impactOffset)
     targetRing.position.copy(target.position)
