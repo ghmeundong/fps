@@ -245,7 +245,12 @@ function updateProjectiles(now: number): void {
 
 const shotDirection = new THREE.Vector3()
 const shotOrigin = new THREE.Vector3()
+const cameraOrigin = new THREE.Vector3()
+const aimPoint = new THREE.Vector3()
+const cameraRight = new THREE.Vector3()
+const cameraUp = new THREE.Vector3()
 const impactOffset = new THREE.Vector3()
+const projectileAimDistance = 45
 let shotsFired = 0
 let shotsHit = 0
 let score = 0
@@ -292,12 +297,16 @@ function createTracer(position: THREE.Vector3): void {
 function fireShot(): void {
   shotsFired += 1
   weaponBarrel.getWorldPosition(shotOrigin)
+  camera.getWorldPosition(cameraOrigin)
   camera.getWorldDirection(shotDirection)
+  cameraRight.setFromMatrixColumn(camera.matrixWorld, 0)
+  cameraUp.setFromMatrixColumn(camera.matrixWorld, 1)
+  aimPoint.copy(cameraOrigin).addScaledVector(shotDirection, projectileAimDistance)
   const movingAtShot = controls.isLocked && (keys.has('KeyW') || keys.has('KeyA') || keys.has('KeyS') || keys.has('KeyD'))
   const shotSpread = aiming ? 0.004 : movingAtShot ? 0.045 : 0.02
-  shotDirection.x += (Math.random() - 0.5) * shotSpread
-  shotDirection.y += (Math.random() - 0.5) * shotSpread
-  shotDirection.normalize()
+  aimPoint.addScaledVector(cameraRight, (Math.random() - 0.5) * shotSpread * projectileAimDistance)
+  aimPoint.addScaledVector(cameraUp, (Math.random() - 0.5) * shotSpread * projectileAimDistance)
+  shotDirection.copy(aimPoint).sub(shotOrigin).normalize()
   spawnProjectile(shotDirection)
   updateAimStats()
 }
