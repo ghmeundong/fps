@@ -203,12 +203,11 @@ const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
 const projectileVelocity = 90
 const projectileLifetime = 3
 
-function spawnProjectile(): void {
+function spawnProjectile(direction: THREE.Vector3): void {
   weaponBarrel.getWorldPosition(shotOrigin)
-  camera.getWorldDirection(shotDirection)
   const bodyDescription = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(shotOrigin.x, shotOrigin.y, shotOrigin.z)
-    .setLinvel(shotDirection.x * projectileVelocity, shotDirection.y * projectileVelocity, shotDirection.z * projectileVelocity)
+    .setLinvel(direction.x * projectileVelocity, direction.y * projectileVelocity, direction.z * projectileVelocity)
     .setCcdEnabled(true)
   const body = physicsWorld.createRigidBody(bodyDescription)
   physicsWorld.createCollider(RAPIER.ColliderDesc.ball(0.035).setDensity(1), body)
@@ -314,7 +313,7 @@ function fireShot(): void {
     })
   }
 
-  spawnProjectile()
+  spawnProjectile(shotDirection)
   updateAimStats()
 }
 
