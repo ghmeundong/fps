@@ -28,6 +28,7 @@ app.innerHTML = `
 `
 
 const canvas = document.querySelector<HTMLCanvasElement>('#range-canvas')!
+const crosshair = document.querySelector<HTMLElement>('.crosshair')!
 const range = document.querySelector<HTMLElement>('.range')!
 const startButton = document.querySelector<HTMLButtonElement>('.start-button')!
 const sessionLabel = document.querySelector<HTMLSpanElement>('#session-label')!
@@ -344,6 +345,8 @@ function render(): void {
   }
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
+  const crosshairGap = aiming ? 2 : isMoving ? 14 : 8
+  crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   const swayAmount = isMoving ? (aiming ? 0.008 : 0.018) : 0
   weapon.position.set(
     weaponPosition.x + Math.sin(elapsed * 6.5) * swayAmount,
