@@ -2,6 +2,9 @@ import './style.css'
 import * as THREE from 'three'
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js'
 import { gsap } from 'gsap'
+import RAPIER from '@dimforge/rapier3d-compat'
+
+await RAPIER.init()
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -35,6 +38,8 @@ const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
 scene.fog = new THREE.Fog('#0b0e12', 14, 52)
+const physicsWorld = new RAPIER.World({ x: 0, y: -9.81, z: 0 })
+physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(1000, 0.1, 1000).setTranslation(0, -0.1, 0))
 
 const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 60)
 camera.position.set(0, 1.6, 5)
@@ -185,6 +190,47 @@ targetRing.position.copy(target.position)
 targetRing.rotation.x = Math.PI / 2
 scene.add(targetRing)
 
+type Projectile = {
+  body: RAPIER.RigidBody
+  mesh: THREE.Mesh
+  bornAt: number
+}
+
+const projectiles: Projectile[] = []
+const projectileMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a3', fog: false })
+const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
+const projectileVelocity = 34
+const projectileLifetime = 3
+
+function spawnProjectile(): void {
+  camera.getWorldPosition(shotOrigin)
+  camera.getWorldDirection(shotDirection)
+  const bodyDescription = RAPIER.RigidBodyDesc.dynamic()
+    .setTranslation(shotOrigin.x, shotOrigin.y, shotOrigin.z)
+    .setLinvel(shotDirection.x * projectileVelocity, shotDirection.y * projectileVelocity, shotDirection.z * projectileVelocity)
+    .setCcdEnabled(true)
+  const body = physicsWorld.createRigidBody(bodyDescription)
+  physicsWorld.createCollider(RAPIER.ColliderDesc.ball(0.035).setDensity(1), body)
+  const mesh = new THREE.Mesh(projectileGeometry, projectileMaterial)
+  mesh.position.copy(shotOrigin)
+  scene.add(mesh)
+  projectiles.push({ body, mesh, bornAt: performance.now() / 1000 })
+}
+
+function updateProjectiles(now: number): void {
+  physicsWorld.step()
+  for (let index = projectiles.length - 1; index >= 0; index -= 1) {
+    const projectile = projectiles[index]
+    const translation = projectile.body.translation()
+    projectile.mesh.position.set(translation.x, translation.y, translation.z)
+    if (now - projectile.bornAt > projectileLifetime || translation.y < -1) {
+      physicsWorld.removeRigidBody(projectile.body)
+      scene.remove(projectile.mesh)
+      projectiles.splice(index, 1)
+    }
+  }
+}
+
 const raycaster = new THREE.Raycaster()
 const shotDirection = new THREE.Vector3()
 const shotOrigin = new THREE.Vector3()
@@ -245,6 +291,7 @@ function fireShot(): void {
     targetRing.position.copy(target.position)
   }
 
+  spawnProjectile()
   updateAimStats()
 }
 
@@ -265,6 +312,7 @@ function render(): void {
   const elapsed = clock.getElapsedTime()
   target.position.y = 2.2 + Math.sin(elapsed * 1.5) * 0.18
   targetRing.position.y = target.position.y
+  updateProjectiles(performance.now() / 1000)
 
   movement.set(0, 0, 0)
   if (controls.isLocked) {
