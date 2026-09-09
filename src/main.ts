@@ -65,6 +65,15 @@ const settingsClose = document.querySelector<HTMLButtonElement>('.settings-close
 const menuHome = document.querySelector<HTMLElement>('.menu-home')!
 const modeMenu = document.querySelector<HTMLElement>('.mode-menu')!
 const settingsContent = document.querySelector<HTMLElement>('.settings-content')!
+const resetSettingsButton = document.createElement('button')
+resetSettingsButton.type = 'button'
+resetSettingsButton.className = 'settings-reset-button'
+resetSettingsButton.textContent = 'RESET DEFAULTS'
+settingsContent.querySelector('.settings-heading')?.append(resetSettingsButton)
+resetSettingsButton.addEventListener('click', () => {
+  localStorage.removeItem(settingsStorageKey)
+  window.location.reload()
+})
 const menuModeButton = document.querySelector<HTMLButtonElement>('#menu-mode-button')!
 const menuSettingsButton = document.querySelector<HTMLButtonElement>('#menu-settings-button')!
 const modeCategoryButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-category-button')]
@@ -174,6 +183,24 @@ const adsRatioValue = document.querySelector<HTMLOutputElement>('#ads-ratio-valu
 const adsFovSetting = document.querySelector<HTMLInputElement>('#ads-fov-setting')!
 const adsFovValue = document.querySelector<HTMLOutputElement>('#ads-fov-value')!
 const rawInputSetting = document.querySelector<HTMLInputElement>('#raw-input-setting')!
+const domeGridPanel = document.querySelector<HTMLElement>('[data-category-panel="targets"]')!
+const domeGridSetting = document.createElement('input')
+domeGridSetting.id = 'dome-grid-setting'
+domeGridSetting.type = 'checkbox'
+domeGridSetting.checked = false
+const domeGridToggleLabel = document.createElement('label')
+domeGridToggleLabel.className = 'toggle-row'
+domeGridToggleLabel.textContent = 'NEON DOME GRID '
+domeGridToggleLabel.append(domeGridSetting)
+const domeGridColorSetting = document.createElement('input')
+domeGridColorSetting.id = 'dome-grid-color-setting'
+domeGridColorSetting.type = 'color'
+domeGridColorSetting.value = '#39ff88'
+const domeGridColorLabel = document.createElement('label')
+domeGridColorLabel.textContent = 'DOME GRID COLOR '
+domeGridColorLabel.append(domeGridColorSetting)
+domeGridPanel.insertBefore(domeGridToggleLabel, floorColorSetting.closest('label'))
+domeGridPanel.insertBefore(domeGridColorLabel, floorColorSetting.closest('label'))
 const crosshairOutlineColorSetting = document.querySelector<HTMLInputElement>('#crosshair-outline-color-setting')!
 const crosshairOutlineThicknessSetting = document.querySelector<HTMLInputElement>('#crosshair-outline-thickness-setting')!
 const crosshairOutlineThicknessValue = document.querySelector<HTMLOutputElement>('#crosshair-outline-thickness-value')!
@@ -272,6 +299,50 @@ try {
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
 scene.fog = new THREE.Fog('#0b0e12', 28, 600)
+const domeGridRadius = 260
+const domeGridSegments = 48
+const domeGridRings = 18
+const domeGridVertices: number[] = []
+const domeGridPoint = new THREE.Vector3()
+for (let ring = 0; ring <= domeGridRings; ring += 1) {
+  const theta = (ring / domeGridRings) * Math.PI * 0.5
+  const ringRadius = Math.sin(theta) * domeGridRadius
+  const ringHeight = Math.cos(theta) * domeGridRadius
+  for (let segment = 0; segment < domeGridSegments; segment += 1) {
+    const nextSegment = (segment + 1) % domeGridSegments
+    domeGridPoint.set(Math.cos((segment / domeGridSegments) * Math.PI * 2) * ringRadius, ringHeight, Math.sin((segment / domeGridSegments) * Math.PI * 2) * ringRadius)
+    domeGridVertices.push(domeGridPoint.x, domeGridPoint.y, domeGridPoint.z)
+    domeGridPoint.set(Math.cos((nextSegment / domeGridSegments) * Math.PI * 2) * ringRadius, ringHeight, Math.sin((nextSegment / domeGridSegments) * Math.PI * 2) * ringRadius)
+    domeGridVertices.push(domeGridPoint.x, domeGridPoint.y, domeGridPoint.z)
+  }
+}
+for (let segment = 0; segment < domeGridSegments; segment += 1) {
+  const longitude = (segment / domeGridSegments) * Math.PI * 2
+  for (let ring = 0; ring < domeGridRings; ring += 1) {
+    const theta = (ring / domeGridRings) * Math.PI * 0.5
+    const nextTheta = ((ring + 1) / domeGridRings) * Math.PI * 0.5
+    domeGridPoint.set(Math.cos(longitude) * Math.sin(theta) * domeGridRadius, Math.cos(theta) * domeGridRadius, Math.sin(longitude) * Math.sin(theta) * domeGridRadius)
+    domeGridVertices.push(domeGridPoint.x, domeGridPoint.y, domeGridPoint.z)
+    domeGridPoint.set(Math.cos(longitude) * Math.sin(nextTheta) * domeGridRadius, Math.cos(nextTheta) * domeGridRadius, Math.sin(longitude) * Math.sin(nextTheta) * domeGridRadius)
+    domeGridVertices.push(domeGridPoint.x, domeGridPoint.y, domeGridPoint.z)
+  }
+}
+const domeGridGeometry = new THREE.BufferGeometry()
+domeGridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(domeGridVertices, 3))
+const domeGrid = new THREE.LineSegments(
+  domeGridGeometry,
+  new THREE.LineBasicMaterial({ color: '#39ff88', transparent: true, opacity: 0.16, depthWrite: false, fog: false }),
+)
+domeGrid.position.y = 0
+domeGrid.visible = domeGridSetting.checked
+scene.add(domeGrid)
+const domeGridMaterial = domeGrid.material as THREE.LineBasicMaterial
+domeGridSetting.addEventListener('change', () => {
+  domeGrid.visible = domeGridSetting.checked
+})
+domeGridColorSetting.addEventListener('input', () => {
+  domeGridMaterial.color.set(domeGridColorSetting.value)
+})
 const physicsWorld = new RAPIER.World({ x: 0, y: -9.81, z: 0 })
 physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(1000, 0.1, 1000).setTranslation(0, -0.1, 0))
 
@@ -1072,17 +1143,33 @@ keyLight.castShadow = true
 scene.add(keyLight)
 
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(240, 240),
+  new THREE.PlaneGeometry(3000, 3000),
   new THREE.MeshStandardMaterial({ color: '#171d24', roughness: 0.9 }),
 )
 floor.rotation.x = -Math.PI / 2
 floor.receiveShadow = true
 scene.add(floor)
 
-const grid = new THREE.GridHelper(240, 48, '#33404a', '#1d252d')
+const grid = new THREE.GridHelper(3000, 600, '#33404a', '#1d252d')
 grid.position.y = 0.01
 scene.add(grid)
 const gridMaterials = (Array.isArray(grid.material) ? grid.material : [grid.material]) as THREE.LineBasicMaterial[]
+const floorTileSize = 1500
+const floorTilePosition = new THREE.Vector3()
+
+function updateInfiniteFloor(): void {
+  floorTilePosition.set(
+    Math.floor(camera.position.x / floorTileSize + 0.5) * floorTileSize,
+    0,
+    Math.floor(camera.position.z / floorTileSize + 0.5) * floorTileSize,
+  )
+  floor.position.x = floorTilePosition.x
+  floor.position.z = floorTilePosition.z
+  grid.position.x = floorTilePosition.x
+  grid.position.z = floorTilePosition.z
+  domeGrid.position.x = camera.position.x
+  domeGrid.position.z = camera.position.z
+}
 
 const targetRadius = 0.72
 const targetGeometry = new THREE.SphereGeometry(targetRadius, 24, 16)
@@ -1599,6 +1686,7 @@ function render(): void {
       verticalVelocity = 0
     }
   }
+  updateInfiniteFloor()
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
   const isAirborne = controls.isLocked && camera.position.y > playerHeight + 0.05
