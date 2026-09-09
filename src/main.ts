@@ -8,18 +8,12 @@ import RAPIER from '@dimforge/rapier3d-compat'
 await RAPIER.init()
 
 const app = document.querySelector<HTMLDivElement>('#app')!
-type ModeCategory = 'flicking'
-const activeModeCategory: ModeCategory = 'flicking'
-
 app.innerHTML = `
   <main class="aim-lab">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">+</span><span>AIM / LAB</span></div>
     </header>
     <section class="range-shell">
-      <div class="mode-dock">
-        <div class="mode-category"><span class="category-label">${activeModeCategory.toUpperCase()}</span><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div></div>
-      </div>
       <div class="range" aria-label="3D aim training range">
       <canvas id="range-canvas" aria-label="FPS training range"></canvas>
       <div class="crosshair" aria-hidden="true"><span></span><i></i><b></b><em></em></div>
@@ -30,8 +24,18 @@ app.innerHTML = `
       <button class="fullscreen-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">⛶</button>
       <div class="settings-overlay" aria-hidden="true">
         <button class="settings-close" type="button" aria-label="Close settings" title="Close settings">×</button>
+        <section class="menu-home menu-view is-visible" aria-label="Pause menu">
+          <div class="menu-kicker">AIM / LAB</div>
+          <h1>PAUSED</h1>
+          <div class="menu-choice-list"><button class="menu-choice-button" id="menu-mode-button" type="button"><strong>MODE SELECT</strong><span>Choose a training scenario</span></button><button class="menu-choice-button" id="menu-settings-button" type="button"><strong>ENVIRONMENT SETTINGS</strong><span>Adjust your range configuration</span></button></div>
+        </section>
+        <section class="mode-menu menu-view" aria-label="Mode selection">
+          <div class="menu-kicker">FLICKING</div>
+          <h1>MODE SELECT</h1>
+          <div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div>
+        </section>
         <div class="settings-content">
-          <div class="settings-heading"><span>SETTINGS</span><small>AIM / LAB CONFIGURATION</small></div>
+          <div class="settings-heading"><span>ENVIRONMENT SETTINGS</span><small>AIM / LAB CONFIGURATION</small></div>
           <div class="settings-layout">
             <nav class="settings-nav" aria-label="Settings categories"><button class="settings-category is-active" data-category="display" type="button">DISPLAY &amp; GRAPHICS</button><button class="settings-category" data-category="weapon" type="button">WEAPON &amp; BALLISTICS</button><button class="settings-category" data-category="controls" type="button">MOUSE &amp; CONTROLS</button><button class="settings-category" data-category="crosshair" type="button">CROSSHAIR</button><button class="settings-category" data-category="targets" type="button">TARGETS &amp; ENVIRONMENT</button><button class="settings-category" data-category="sound" type="button">SOUND</button></nav>
             <div class="settings-category-content">
@@ -57,6 +61,12 @@ const range = document.querySelector<HTMLElement>('.range')!
 const settingsButton = document.querySelector<HTMLButtonElement>('.settings-button')!
 const settingsOverlay = document.querySelector<HTMLElement>('.settings-overlay')!
 const settingsClose = document.querySelector<HTMLButtonElement>('.settings-close')!
+const menuHome = document.querySelector<HTMLElement>('.menu-home')!
+const modeMenu = document.querySelector<HTMLElement>('.mode-menu')!
+const settingsContent = document.querySelector<HTMLElement>('.settings-content')!
+const menuModeButton = document.querySelector<HTMLButtonElement>('#menu-mode-button')!
+const menuSettingsButton = document.querySelector<HTMLButtonElement>('#menu-settings-button')!
+let activeMenuView: 'home' | 'mode' | 'settings' = 'home'
 const weaponPreviewCanvas = document.querySelector<HTMLCanvasElement>('#weapon-preview-canvas')!
 const fullscreenButton = document.querySelector<HTMLButtonElement>('.fullscreen-button')!
 const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
@@ -672,6 +682,18 @@ function updateFullscreenButton(): void {
 }
 
 function handleKeyDown(event: KeyboardEvent): void {
+  if (event.code === 'Escape') {
+    if (document.fullscreenElement) {
+      event.preventDefault()
+      void document.exitFullscreen()
+      return
+    }
+    event.preventDefault()
+    if (!settingsOverlay.classList.contains('is-open')) openMenu()
+    else if (activeMenuView === 'home') closeMenu()
+    else showMenuView('home')
+    return
+  }
   keys.add(event.code)
   if (event.code === 'Space' && controls.isLocked && camera.position.y <= playerHeight + 0.01) {
     verticalVelocity = jumpVelocity
@@ -688,15 +710,34 @@ function handleLockChange(): void {
   range.classList.toggle('is-locked', locked)
 }
 
-canvas.addEventListener('click', lockPointer)
-settingsButton.addEventListener('click', () => {
+function showMenuView(view: 'home' | 'mode' | 'settings'): void {
+  activeMenuView = view
+  menuHome.classList.toggle('is-visible', view === 'home')
+  modeMenu.classList.toggle('is-visible', view === 'mode')
+  settingsContent.classList.toggle('is-visible', view === 'settings')
+}
+
+function openMenu(): void {
+  if (controls.isLocked) controls.unlock()
+  showMenuView('home')
   settingsOverlay.classList.add('is-open')
   settingsOverlay.setAttribute('aria-hidden', 'false')
-})
-settingsClose.addEventListener('click', () => {
+}
+
+function closeMenu(): void {
   settingsOverlay.classList.remove('is-open')
   settingsOverlay.setAttribute('aria-hidden', 'true')
+}
+
+canvas.addEventListener('click', lockPointer)
+settingsButton.addEventListener('click', () => {
+  openMenu()
 })
+settingsClose.addEventListener('click', () => {
+  closeMenu()
+})
+menuModeButton.addEventListener('click', () => showMenuView('mode'))
+menuSettingsButton.addEventListener('click', () => showMenuView('settings'))
 settingsOverlay.addEventListener('click', (event) => {
   if (event.target === settingsOverlay) settingsClose.click()
 })
@@ -954,7 +995,11 @@ function setShootingMode(nextMode: ShootingMode): void {
 }
 
 modeButtons.forEach((button) => {
-  button.addEventListener('click', () => setShootingMode(button.dataset.mode as ShootingMode))
+  button.addEventListener('click', () => {
+    setShootingMode(button.dataset.mode as ShootingMode)
+    closeMenu()
+    controls.lock(rawInputEnabled)
+  })
 })
 
 rebuildTargetPath(target.position)
