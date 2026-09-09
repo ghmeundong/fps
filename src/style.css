@@ -65,6 +65,33 @@ button { font: inherit; }
 .crosshair-cross b { display: none; }
 .crosshair-circle::before, .crosshair-circle::after, .crosshair-circle span, .crosshair-circle i, .crosshair-circle b { display: none; }
 .crosshair-circle em { display: block; position: absolute; width: var(--crosshair-circle-size); height: var(--crosshair-circle-size); top: calc(32px - var(--crosshair-circle-size) / 2); left: calc(32px - var(--crosshair-circle-size) / 2); border: var(--crosshair-thickness) solid var(--crosshair-color); border-radius: 50%; box-shadow: 0 0 5px var(--crosshair-color); }
+.crosshair.is-scope-hidden { display: none; }
+.crosshair.is-hipfire-hidden { display: none; }
+.custom-preview { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-bottom: 14px; }
+.custom-preview-scope { grid-template-columns: minmax(0, 1fr); }
+.custom-preview-item { min-width: 0; border: 1px solid #293139; background: rgba(10, 14, 18, .72); }
+.custom-preview-item > span { display: block; padding: 8px 10px; color: #82909a; font-size: 9px; letter-spacing: 1.3px; }
+.crosshair-preview-stage, .scope-preview-stage, .hit-marker-preview-stage { position: relative; height: 104px; overflow: hidden; background: #11171d; border-top: 1px solid #293139; }
+.crosshair-preview { pointer-events: none; }
+.hit-marker-preview { pointer-events: none; }
+.scope-preview-overlay { display: block; }
+.scope-overlay { position: absolute; z-index: 4; inset: 0; pointer-events: none; display: none; background: radial-gradient(circle at center, transparent 0 31%, rgba(0, 0, 0, .94) 31.3% 100%); }
+.scope-overlay.is-visible { display: block; }
+.scope-reticle { position: absolute; top: 50%; left: 50%; width: min(38%, 360px); height: auto; aspect-ratio: 1; transform: translate(-50%, -50%); border: 2px solid rgba(0, 0, 0, .9); border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 86, 86, .8), inset 0 0 0 1px rgba(255, 86, 86, .65); }
+.scope-overlay { --scope-color: #ff3636; --scope-thickness: 1px; }
+.scope-reticle::before, .scope-reticle::after, .scope-reticle span, .scope-reticle i { position: absolute; content: ''; background: var(--scope-color); box-shadow: 0 0 4px var(--scope-color); }
+.scope-reticle::before { width: var(--scope-thickness); height: 43%; top: 0; left: 50%; }
+.scope-reticle::after { width: var(--scope-thickness); height: 43%; bottom: 0; left: 50%; }
+.scope-reticle span { width: 43%; height: var(--scope-thickness); left: 0; top: 50%; }
+.scope-reticle i { width: 43%; height: var(--scope-thickness); right: 0; top: 50%; }
+.scope-reticle b { position: absolute; width: 7px; height: 7px; left: 50%; top: 50%; transform: translate(-50%, -50%); border: var(--scope-thickness) solid var(--scope-color); border-radius: 50%; box-shadow: 0 0 5px var(--scope-color); }
+.scope-reticle em { position: absolute; left: 50%; top: 50%; width: 1px; height: 1px; transform: translate(-50%, -50%); background: #ffffff; }
+.scope-mil-dot .scope-reticle { border-color: transparent; box-shadow: none; }
+.scope-mil-dot .scope-reticle::before, .scope-mil-dot .scope-reticle::after { height: 46%; }
+.scope-mil-dot .scope-reticle span, .scope-mil-dot .scope-reticle i { width: 46%; }
+.scope-mil-dot .scope-reticle b { width: 4px; height: 4px; border: 0; background: var(--scope-color); }
+.scope-cross .scope-reticle { border-color: transparent; box-shadow: none; }
+.scope-cross .scope-reticle b { display: none; }
 .hit-marker { --hit-marker-size: 36px; --hit-marker-length: 9px; --hit-marker-thickness: 1px; --hit-marker-gap: 10px; --hit-marker-color: #67d68b; position: absolute; z-index: 3; inset: 50% auto auto 50%; width: var(--hit-marker-size); height: var(--hit-marker-size); opacity: 0; pointer-events: none; transform: translate(-50%, -50%); }
 .hit-marker i { position: absolute; width: var(--hit-marker-length); height: var(--hit-marker-thickness); background: var(--hit-marker-color); box-shadow: 0 0 4px var(--hit-marker-color); transform-origin: center; }
 .hit-marker i:nth-child(1) { top: calc(50% - var(--hit-marker-gap)); left: calc(50% - var(--hit-marker-gap) - var(--hit-marker-length) / 2); transform: rotate(45deg); }
