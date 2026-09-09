@@ -1,0 +1,38 @@
+[ ] 프로젝트 기본 환경 설정
+    [ ] Vite + Three.js 프로젝트 생성 및 빌드 환경 구축
+    [ ] 3D Canvas 및 기본 Render Loop (requestAnimationFrame) 구성
+    [ ] 화면 Resize 이벤트 핸들러 및 카메라 Aspect Ratio 자동 업데이트 구현
+
+[ ] 입력 및 컨트롤러 (PointerLock)
+    [ ] Canvas 클릭 시 Pointer Lock API 처리 (무한 마우스 회전)
+    [ ] PointerLockControls 연동 및 마우스 감도(Sensitivity) 조절 옵션 구현
+    [ ] WASD 이동 및 점프/플레이어 바운딩 박스 세팅
+
+[ ] 1인칭 무기 메쉬 및 조준(Zoom/ADS) 시스템
+    [ ] 권총 3D 모델(GLTF/GLB) 로드 및 카메라 자식 요소로 배치 (camera.add)
+    [ ] 평시(Hipfire) 무기 위치 및 회전값 세팅
+    [ ] 우클릭 정조준(ADS) 시 camera.fov 조절 및 무기 중앙 이동 Lerp 구현
+    [ ] GSAP 라이브러리를 활용한 들숨/날숨 및 이동 시 무기 흔들림(Sway) 추가
+
+[ ] 히트스캔 & 투사체(Projectile) 사격 로직
+    [ ] 화면 중앙 기준 THREE.Raycaster 사격 판정 구현 (히트스캔)
+    [ ] 히트스캔 궤적(Tracer Line) 연출 및 탄착점 이펙트 생성/제거
+    [ ] 물리 엔진 (Rapier3D 또는 Cannon.es) 도입 및 연동
+    [ ] 중력 낙차가 적용되는 투사체(Projectile) 탄환 메쉬 생성 및 이동 로직 구현
+
+[ ] 총기 반동(Recoil) & 총구 화염(Muzzle Flash)
+    [ ] 발사 시 카메라 순간 상향 회전 및 무작위 X축 오프셋 반동 적용
+    [ ] 반동 후 카메라 원위치 복원(Recoil Recovery) 보간 알고리즘 추가
+    [ ] 힙파이어/정조준 상태에 따른 탄착군 산탄도(Spread) 오차 벡터 적용
+    [ ] 사격 순간 총구 위치에 화염/연기 파티클 렌더링
+
+[ ] AI 및 타겟(표적) 무작위 이동
+    [ ] 기본 표적 구체/타겟 메쉬 렌더링 및 Hitbox 설정
+    [ ] THREE.CatmullRomCurve3 기반 곡선 궤적 스플라인 이동 구현
+    [ ] Perlin Noise 적용으로 불규칙한 좌우/상하 스트레이핑(Strafe) 이동 알고리즘 구현
+    [ ] 타겟 적중 시 파괴 효과 및 무작위 위치 재생성 로직 구축
+
+[ ] UI 및 에임 연습 게임 모드
+    [ ] 화면 중앙 크로스헤어(Crosshair) UI 배치
+    [ ] 사격 모드 선택 시스템 (Gridshot, Flicking, Tracking 모드)
+    [ ] 명중률(Accuracy), 반응 속도(TTK), 점수(Score) 계산 및 HUD 표시 UI 구현
