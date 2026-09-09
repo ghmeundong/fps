@@ -38,11 +38,11 @@ const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
 const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
-scene.fog = new THREE.Fog('#0b0e12', 14, 52)
+scene.fog = new THREE.Fog('#0b0e12', 28, 140)
 const physicsWorld = new RAPIER.World({ x: 0, y: -3.5, z: 0 })
 physicsWorld.createCollider(RAPIER.ColliderDesc.cuboid(1000, 0.1, 1000).setTranslation(0, -0.1, 0))
 
-const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 60)
+const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 160)
 camera.position.set(0, 1.6, 5)
 const controls = new PointerLockControls(camera, canvas)
 controls.pointerSpeed = 0.7
@@ -72,6 +72,13 @@ const weaponBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.2
 weaponBarrel.rotation.x = Math.PI / 2
 weaponBarrel.position.set(0, 0.11, -0.55)
 weapon.add(weaponBarrel)
+const muzzleFlash = new THREE.Mesh(
+  new THREE.ConeGeometry(0.07, 0.24, 8),
+  new THREE.MeshBasicMaterial({ color: '#ffd36b', transparent: true, opacity: 0, fog: false }),
+)
+muzzleFlash.rotation.x = -Math.PI / 2
+muzzleFlash.position.set(0, 0.11, -0.7)
+weapon.add(muzzleFlash)
 const rearSightLeft = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.032, 0.038), weaponBodyMaterial)
 rearSightLeft.position.set(-0.032, 0.16, 0.01)
 weapon.add(rearSightLeft)
@@ -87,6 +94,25 @@ weapon.rotation.copy(weaponRotation)
 camera.add(weapon)
 
 let aiming = false
+let recoilPitch = 0
+let recoilYaw = 0
+let appliedRecoilPitch = 0
+let appliedRecoilYaw = 0
+
+function triggerMuzzleFlash(): void {
+  muzzleFlash.scale.set(0.65 + Math.random() * 0.35, 0.8 + Math.random() * 0.5, 0.65 + Math.random() * 0.35)
+  gsap.killTweensOf(muzzleFlash.material)
+  muzzleFlash.material.opacity = 0.9
+  gsap.to(muzzleFlash.material, { opacity: 0, duration: 0.07, ease: 'power2.out' })
+}
+
+function applyRecoil(): void {
+  const strength = aiming ? 0.018 : 0.035
+  recoilPitch += strength
+  recoilYaw += (Math.random() - 0.5) * strength * 0.8
+  triggerMuzzleFlash()
+}
+
 function setAiming(nextAiming: boolean): void {
   aiming = nextAiming
   const position = aiming ? adsPosition : hipPosition
@@ -305,6 +331,7 @@ function createTracer(position: THREE.Vector3): void {
 
 function fireShot(): void {
   shotsFired += 1
+  applyRecoil()
   weaponBarrel.getWorldPosition(shotOrigin)
   camera.getWorldPosition(cameraOrigin)
   camera.getWorldDirection(shotDirection)
@@ -369,6 +396,17 @@ function render(): void {
     weaponPosition.z,
   )
   weapon.rotation.set(weaponRotation.x, weaponRotation.y, weaponRotation.z + Math.sin(elapsed * 4) * swayAmount)
+
+  const recoilPitchDelta = recoilPitch - appliedRecoilPitch
+  const recoilYawDelta = recoilYaw - appliedRecoilYaw
+  if (Math.abs(recoilPitchDelta) > 0.00001 || Math.abs(recoilYawDelta) > 0.00001) {
+    camera.rotation.x -= recoilPitchDelta
+    camera.rotation.y += recoilYawDelta
+    appliedRecoilPitch = recoilPitch
+    appliedRecoilYaw = recoilYaw
+    recoilPitch *= Math.exp(-12 * delta)
+    recoilYaw *= Math.exp(-14 * delta)
+  }
 
   renderer.render(scene, camera)
   requestAnimationFrame(render)
