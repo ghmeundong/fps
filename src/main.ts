@@ -23,7 +23,7 @@ app.innerHTML = `
       <label class="sensitivity-control">SENS <output id="sensitivity-value">0.70</output><input id="sensitivity" type="range" min="0.2" max="1.5" step="0.05" value="0.7" aria-label="Mouse sensitivity"></label>
       <button class="start-button" type="button">ENTER RANGE <span>↗</span></button>
     </section>
-    <footer class="bottombar"><span>GRIDSHOT / BEGINNER</span><span>WASD MOVE &nbsp;·&nbsp; CLICK TO LOCK POINTER</span></footer>
+    <footer class="bottombar"><div class="mode-select" role="group" aria-label="Shooting mode"><button class="mode-button is-active" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="flicking" type="button">FLICKING</button><button class="mode-button" data-mode="tracking" type="button">TRACKING</button></div><span>WASD MOVE &nbsp;·&nbsp; CLICK TO LOCK POINTER</span></footer>
   </main>
 `
 
@@ -36,6 +36,9 @@ const sensitivityInput = document.querySelector<HTMLInputElement>('#sensitivity'
 const sensitivityValue = document.querySelector<HTMLOutputElement>('#sensitivity-value')!
 const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
 const scoreValue = document.querySelector<HTMLElement>('#score-value')!
+const modeButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-button')]
+type ShootingMode = 'gridshot' | 'flicking' | 'tracking'
+let shootingMode: ShootingMode = 'gridshot'
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
 scene.fog = new THREE.Fog('#0b0e12', 28, 140)
@@ -226,6 +229,11 @@ const targetPathSample = new THREE.Vector3()
 const targetPath = new THREE.CatmullRomCurve3([], true, 'catmullrom', 0.5)
 let targetPathSeed = 0
 let targetPathStartedAt = 0
+let targetPathSpeed = 0.11
+const gridPositions = [
+  new THREE.Vector3(-3, 2.2, -8), new THREE.Vector3(0, 3.4, -9), new THREE.Vector3(3, 2.4, -8),
+  new THREE.Vector3(-2.5, 1.2, -10), new THREE.Vector3(2.4, 1.4, -10),
+]
 
 function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
   targetPathCenter.copy(center)
@@ -240,10 +248,25 @@ function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
   ]
 }
 
+function setShootingMode(nextMode: ShootingMode): void {
+  shootingMode = nextMode
+  modeButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.mode === nextMode))
+  const nextCenter = nextMode === 'gridshot'
+    ? gridPositions[Math.floor(Math.random() * gridPositions.length)]
+    : new THREE.Vector3((Math.random() - 0.5) * 8, 1.6 + Math.random() * 2.6, -9 - Math.random() * 8)
+  targetPathSpeed = nextMode === 'tracking' ? 0.075 : nextMode === 'flicking' ? 0.16 : 0.11
+  rebuildTargetPath(nextCenter, clock.getElapsedTime())
+  target.position.copy(nextCenter)
+}
+
+modeButtons.forEach((button) => {
+  button.addEventListener('click', () => setShootingMode(button.dataset.mode as ShootingMode))
+})
+
 rebuildTargetPath(target.position)
 
 function updateTargetMovement(elapsed: number): void {
-  const pathTime = ((elapsed - targetPathStartedAt) * 0.075) % 1
+  const pathTime = ((elapsed - targetPathStartedAt) * targetPathSpeed) % 1
   targetPath.getPointAt(pathTime, targetPathSample)
   const noiseTime = elapsed * 1.7 + targetPathSeed
   const strafeX = Math.sin(noiseTime) * 0.42 + Math.sin(noiseTime * 2.37) * 0.16
@@ -324,7 +347,11 @@ function updateAimStats(): void {
 function registerTargetHit(): void {
   shotsHit += 1
   score += 100
-  impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
+  if (shootingMode === 'gridshot') {
+    impactOffset.copy(gridPositions[Math.floor(Math.random() * gridPositions.length)])
+  } else {
+    impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
+  }
   rebuildTargetPath(impactOffset, clock.getElapsedTime())
   target.position.copy(targetPath.points[0])
   target.visible = false

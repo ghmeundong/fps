@@ -59,6 +59,9 @@ button { font: inherit; }
 .crosshair span { width: 8px; height: 1px; left: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: left .12s ease; } .crosshair i { width: 8px; height: 1px; right: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: right .12s ease; }
 .start-button { position: absolute; z-index: 4; right: 26px; top: 24px; padding: 11px 15px; border: 1px solid #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .45); cursor: pointer; font-size: 10px; letter-spacing: 1.5px; transition: background .2s, border-color .2s; }
 .start-button:hover { border-color: #f17a61; background: rgba(170, 54, 39, .7); } .start-button span { margin-left: 12px; font-size: 14px; }
-.bottombar { height: 58px; font-size: 9px; letter-spacing: 1.5px; }
+.bottombar { height: 58px; display: flex; align-items: center; justify-content: space-between; font-size: 9px; letter-spacing: 1.5px; }
+.mode-select { display: flex; gap: 5px; }
+.mode-button { padding: 7px 10px; border: 1px solid #293139; color: #82909a; background: transparent; cursor: pointer; font-size: 9px; letter-spacing: 1px; transition: color .2s, border-color .2s, background .2s; }
+.mode-button:hover, .mode-button.is-active { border-color: #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .45); }
 
-@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; } .session-status { display: none; } .range { min-height: 390px; } .bottombar span:last-child { display: none; } .start-button { right: 16px; top: 16px; } .range-label, .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } }
+@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; } .session-status { display: none; } .range { min-height: 390px; } .bottombar span:last-child { display: none; } .start-button { right: 16px; top: 16px; } .range-label, .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } .mode-button { padding: 6px 7px; font-size: 8px; } }
