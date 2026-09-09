@@ -1,6 +1,7 @@
 import './style.css'
 import * as THREE from 'three'
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js'
+import { gsap } from 'gsap'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -31,13 +32,63 @@ const sensitivityInput = document.querySelector<HTMLInputElement>('#sensitivity'
 const sensitivityValue = document.querySelector<HTMLOutputElement>('#sensitivity-value')!
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
-scene.fog = new THREE.Fog('#0b0e12', 9, 28)
+scene.fog = new THREE.Fog('#0b0e12', 14, 52)
 
-const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 100)
+const camera = new THREE.PerspectiveCamera(65, 1, 0.1, 60)
 camera.position.set(0, 1.6, 5)
 const controls = new PointerLockControls(camera, canvas)
 controls.pointerSpeed = 0.7
 scene.add(controls.object)
+
+const weapon = new THREE.Group()
+const weaponPosition = new THREE.Vector3(0.32, -0.27, -0.58)
+const weaponRotation = new THREE.Euler(-0.03, 0.04, 0.02)
+const hipPosition = weaponPosition.clone()
+const hipRotation = weaponRotation.clone()
+const adsPosition = new THREE.Vector3(0, -0.19, -0.48)
+const adsRotation = new THREE.Euler(0, 0, 0)
+const weaponBodyMaterial = new THREE.MeshStandardMaterial({ color: '#252b31', roughness: 0.38, metalness: 0.65, fog: false })
+const weaponAccentMaterial = new THREE.MeshStandardMaterial({ color: '#bd5542', roughness: 0.42, metalness: 0.35, fog: false })
+const weaponBody = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.18, 0.48), weaponBodyMaterial)
+weaponBody.position.z = -0.18
+weaponBody.castShadow = true
+weapon.add(weaponBody)
+const weaponSlide = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 0.42), weaponAccentMaterial)
+weaponSlide.position.set(0, 0.12, -0.17)
+weapon.add(weaponSlide)
+const weaponGrip = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.34, 0.16), weaponBodyMaterial)
+weaponGrip.position.set(0, -0.17, 0.02)
+weaponGrip.rotation.x = -0.18
+weapon.add(weaponGrip)
+const weaponBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.24, 12), weaponBodyMaterial)
+weaponBarrel.rotation.x = Math.PI / 2
+weaponBarrel.position.set(0, 0.13, -0.5)
+weapon.add(weaponBarrel)
+weapon.position.copy(weaponPosition)
+weapon.rotation.copy(weaponRotation)
+camera.add(weapon)
+
+let aiming = false
+function setAiming(nextAiming: boolean): void {
+  aiming = nextAiming
+  const position = aiming ? adsPosition : hipPosition
+  const rotation = aiming ? adsRotation : hipRotation
+  gsap.to(weaponPosition, { x: position.x, y: position.y, z: position.z, duration: 0.18, ease: 'power2.out' })
+  gsap.to(weaponRotation, { x: rotation.x, y: rotation.y, z: rotation.z, duration: 0.18, ease: 'power2.out' })
+  gsap.to(camera, { fov: aiming ? 48 : 65, duration: 0.2, ease: 'power2.out', onUpdate: () => camera.updateProjectionMatrix() })
+}
+
+function handlePointerDown(event: PointerEvent): void {
+  if (event.button === 2 && controls.isLocked) setAiming(true)
+}
+
+function handlePointerUp(event: PointerEvent): void {
+  if (event.button === 2) setAiming(false)
+}
+
+canvas.addEventListener('pointerdown', handlePointerDown)
+document.addEventListener('pointerup', handlePointerUp)
+canvas.addEventListener('contextmenu', (event) => event.preventDefault())
 
 sensitivityInput.addEventListener('input', () => {
   const sensitivity = Number(sensitivityInput.value)
@@ -49,7 +100,6 @@ const keys = new Set<string>()
 const movement = new THREE.Vector3()
 const direction = new THREE.Vector3()
 const playerHeight = 1.6
-const playerRadius = 0.35
 const gravity = 18
 const jumpVelocity = 7
 let verticalVelocity = 0
@@ -94,14 +144,14 @@ keyLight.castShadow = true
 scene.add(keyLight)
 
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(32, 32),
+  new THREE.PlaneGeometry(2000, 2000),
   new THREE.MeshStandardMaterial({ color: '#171d24', roughness: 0.9 }),
 )
 floor.rotation.x = -Math.PI / 2
 floor.receiveShadow = true
 scene.add(floor)
 
-const grid = new THREE.GridHelper(32, 32, '#33404a', '#1d252d')
+const grid = new THREE.GridHelper(2000, 200, '#33404a', '#1d252d')
 grid.position.y = 0.01
 scene.add(grid)
 
@@ -142,7 +192,7 @@ function render(): void {
 
   movement.set(0, 0, 0)
   if (controls.isLocked) {
-    direction.set(Number(keys.has('KeyD')) - Number(keys.has('KeyA')), 0, Number(keys.has('KeyS')) - Number(keys.has('KeyW')))
+    direction.set(Number(keys.has('KeyD')) - Number(keys.has('KeyA')), 0, Number(keys.has('KeyW')) - Number(keys.has('KeyS')))
     if (direction.lengthSq() > 0) {
       direction.normalize()
       movement.copy(direction).multiplyScalar(4.5 * delta)
@@ -156,9 +206,15 @@ function render(): void {
       camera.position.y = playerHeight
       verticalVelocity = 0
     }
-    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -14 + playerRadius, 14 - playerRadius)
-    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -14 + playerRadius, 14 - playerRadius)
   }
+
+  const swayAmount = aiming ? 0.008 : 0.018
+  weapon.position.set(
+    weaponPosition.x + Math.sin(elapsed * 6.5) * swayAmount,
+    weaponPosition.y + Math.cos(elapsed * 3.25) * swayAmount * 0.65,
+    weaponPosition.z,
+  )
+  weapon.rotation.set(weaponRotation.x, weaponRotation.y, weaponRotation.z + Math.sin(elapsed * 4) * swayAmount)
 
   renderer.render(scene, camera)
   requestAnimationFrame(render)
