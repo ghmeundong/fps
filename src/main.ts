@@ -223,7 +223,12 @@ function updateProjectiles(now: number): void {
     const projectile = projectiles[index]
     const translation = projectile.body.translation()
     projectile.mesh.position.set(translation.x, translation.y, translation.z)
-    if (now - projectile.bornAt > projectileLifetime || translation.y < -1) {
+    const projectilePosition = projectile.mesh.position
+    const hitTarget = target.visible && projectilePosition.distanceToSquared(target.position) < 0.64
+    if (hitTarget) {
+      registerTargetHit()
+    }
+    if (hitTarget || now - projectile.bornAt > projectileLifetime || translation.y < -1) {
       physicsWorld.removeRigidBody(projectile.body)
       scene.remove(projectile.mesh)
       projectiles.splice(index, 1)
@@ -231,7 +236,6 @@ function updateProjectiles(now: number): void {
   }
 }
 
-const raycaster = new THREE.Raycaster()
 const shotDirection = new THREE.Vector3()
 const shotOrigin = new THREE.Vector3()
 const impactOffset = new THREE.Vector3()
@@ -243,6 +247,21 @@ function updateAimStats(): void {
   const accuracy = shotsFired === 0 ? '--.-' : ((shotsHit / shotsFired) * 100).toFixed(1)
   accuracyValue.textContent = `${accuracy}%`
   scoreValue.textContent = score.toString().padStart(6, '0')
+}
+
+function registerTargetHit(): void {
+  shotsHit += 1
+  score += 100
+  impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
+  target.position.copy(impactOffset)
+  targetRing.position.copy(target.position)
+  target.visible = false
+  targetRing.visible = false
+  gsap.delayedCall(0.28, () => {
+    target.visible = true
+    targetRing.visible = true
+  })
+  updateAimStats()
 }
 
 function createTracer(end: THREE.Vector3): void {
@@ -294,24 +313,8 @@ function fireShot(): void {
   shotDirection.x += (Math.random() - 0.5) * shotSpread
   shotDirection.y += (Math.random() - 0.5) * shotSpread
   shotDirection.normalize()
-  raycaster.set(shotOrigin, shotDirection)
-  const hit = raycaster.intersectObject(target, false)[0]
-  const tracerEnd = hit ? hit.point : shotOrigin.clone().addScaledVector(shotDirection, 45)
+  const tracerEnd = shotOrigin.clone().addScaledVector(shotDirection, 45)
   createTracer(tracerEnd)
-
-  if (hit) {
-    shotsHit += 1
-    score += 100
-    impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
-    target.position.copy(impactOffset)
-    targetRing.position.copy(target.position)
-    target.visible = false
-    targetRing.visible = false
-    gsap.delayedCall(0.28, () => {
-      target.visible = true
-      targetRing.visible = true
-    })
-  }
 
   spawnProjectile(shotDirection)
   updateAimStats()
