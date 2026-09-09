@@ -216,19 +216,10 @@ scene.add(grid)
 
 const target = new THREE.Mesh(
   new THREE.SphereGeometry(0.72, 24, 16),
-  new THREE.MeshStandardMaterial({ color: '#e33f32', roughness: 0.45 }),
+  new THREE.MeshBasicMaterial({ color: '#e33f32', fog: false }),
 )
 target.position.set(0, 2.2, -7)
-target.castShadow = true
 scene.add(target)
-
-const targetRing = new THREE.Mesh(
-  new THREE.TorusGeometry(0.78, 0.035, 8, 32),
-  new THREE.MeshBasicMaterial({ color: '#f7c95a' }),
-)
-targetRing.position.copy(target.position)
-targetRing.rotation.x = Math.PI / 2
-scene.add(targetRing)
 
 const targetPathCenter = new THREE.Vector3()
 const targetPathSample = new THREE.Vector3()
@@ -258,7 +249,6 @@ function updateTargetMovement(elapsed: number): void {
   const strafeX = Math.sin(noiseTime) * 0.42 + Math.sin(noiseTime * 2.37) * 0.16
   const strafeY = Math.sin(noiseTime * 0.83) * 0.3 + Math.cos(noiseTime * 1.91) * 0.12
   target.position.set(targetPathSample.x + strafeX, targetPathSample.y + strafeY, targetPathSample.z)
-  targetRing.position.copy(target.position)
 }
 
 type Projectile = {
@@ -337,12 +327,9 @@ function registerTargetHit(): void {
   impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
   rebuildTargetPath(impactOffset, clock.getElapsedTime())
   target.position.copy(targetPath.points[0])
-  targetRing.position.copy(target.position)
   target.visible = false
-  targetRing.visible = false
   gsap.delayedCall(0.28, () => {
     target.visible = true
-    targetRing.visible = true
   })
   updateAimStats()
 }
