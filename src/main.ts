@@ -158,8 +158,6 @@ sensitivityInput.addEventListener('input', () => {
 const keys = new Set<string>()
 const movement = new THREE.Vector3()
 const direction = new THREE.Vector3()
-const cameraBob = new THREE.Vector3()
-const appliedCameraBob = new THREE.Vector3()
 const playerHeight = 1.6
 const gravity = 18
 const jumpVelocity = 7
@@ -232,6 +230,37 @@ const targetRing = new THREE.Mesh(
 targetRing.position.copy(target.position)
 targetRing.rotation.x = Math.PI / 2
 scene.add(targetRing)
+
+const targetPathCenter = new THREE.Vector3()
+const targetPathSample = new THREE.Vector3()
+const targetPath = new THREE.CatmullRomCurve3([], true, 'catmullrom', 0.5)
+let targetPathSeed = 0
+let targetPathStartedAt = 0
+
+function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
+  targetPathCenter.copy(center)
+  targetPathSeed = Math.random() * Math.PI * 2
+  targetPathStartedAt = startTime
+  targetPath.points = [
+    new THREE.Vector3(center.x - 2.5, center.y + 0.4, center.z + 1.4),
+    new THREE.Vector3(center.x + 2.2, center.y + 1.1, center.z + 0.6),
+    new THREE.Vector3(center.x + 2.8, center.y - 0.35, center.z - 1.4),
+    new THREE.Vector3(center.x - 1.8, center.y - 0.8, center.z - 1.7),
+    new THREE.Vector3(center.x - 3, center.y + 0.1, center.z - 0.2),
+  ]
+}
+
+rebuildTargetPath(target.position)
+
+function updateTargetMovement(elapsed: number): void {
+  const pathTime = ((elapsed - targetPathStartedAt) * 0.075) % 1
+  targetPath.getPointAt(pathTime, targetPathSample)
+  const noiseTime = elapsed * 1.7 + targetPathSeed
+  const strafeX = Math.sin(noiseTime) * 0.42 + Math.sin(noiseTime * 2.37) * 0.16
+  const strafeY = Math.sin(noiseTime * 0.83) * 0.3 + Math.cos(noiseTime * 1.91) * 0.12
+  target.position.set(targetPathSample.x + strafeX, targetPathSample.y + strafeY, targetPathSample.z)
+  targetRing.position.copy(target.position)
+}
 
 type Projectile = {
   body: RAPIER.RigidBody
@@ -307,7 +336,8 @@ function registerTargetHit(): void {
   shotsHit += 1
   score += 100
   impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
-  target.position.copy(impactOffset)
+  rebuildTargetPath(impactOffset, clock.getElapsedTime())
+  target.position.copy(targetPath.points[0])
   targetRing.position.copy(target.position)
   target.visible = false
   targetRing.visible = false
@@ -371,8 +401,7 @@ const clock = new THREE.Clock()
 function render(): void {
   const delta = Math.min(clock.getDelta(), 0.05)
   const elapsed = clock.getElapsedTime()
-  target.position.y = 2.2 + Math.sin(elapsed * 1.5) * 0.18
-  targetRing.position.y = target.position.y
+  if (target.visible) updateTargetMovement(elapsed)
   updateProjectiles(performance.now() / 1000)
 
   movement.set(0, 0, 0)
@@ -394,20 +423,12 @@ function render(): void {
   }
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
-  const bobStrength = aiming ? 0.018 : 0.032
-  const targetBobX = isMoving ? Math.sin(elapsed * 6.5) * bobStrength : 0
-  const targetBobY = isMoving ? Math.abs(Math.cos(elapsed * 13)) * bobStrength * 0.7 : 0
-  cameraBob.set(targetBobX, targetBobY, 0)
-  const cameraBobDelta = cameraBob.clone().sub(appliedCameraBob)
-  camera.position.x += cameraBobDelta.x
-  camera.position.y += cameraBobDelta.y
-  appliedCameraBob.copy(cameraBob)
   const crosshairGap = aiming ? 6 : isMoving ? 24 : 14
   crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   const swayAmount = isMoving ? (aiming ? 0.008 : 0.018) : 0
   weapon.position.set(
     weaponPosition.x + Math.sin(elapsed * 6.5) * swayAmount,
-    weaponPosition.y + Math.abs(Math.cos(elapsed * 13)) * swayAmount * 0.7,
+    weaponPosition.y + Math.cos(elapsed * 3.25) * swayAmount * 0.65,
     weaponPosition.z,
   )
   weapon.rotation.set(weaponRotation.x, weaponRotation.y, weaponRotation.z + Math.sin(elapsed * 4) * swayAmount)
