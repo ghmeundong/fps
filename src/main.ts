@@ -215,11 +215,10 @@ grid.position.y = 0.01
 scene.add(grid)
 
 const target = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.72, 0.72, 0.16, 32),
-  new THREE.MeshStandardMaterial({ color: '#e65b46', roughness: 0.45 }),
+  new THREE.SphereGeometry(0.72, 24, 16),
+  new THREE.MeshStandardMaterial({ color: '#e33f32', roughness: 0.45 }),
 )
 target.position.set(0, 2.2, -7)
-target.rotation.x = Math.PI / 2
 target.castShadow = true
 scene.add(target)
 
