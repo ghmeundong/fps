@@ -248,7 +248,6 @@ function updateAimStats(): void {
 function createTracer(end: THREE.Vector3): void {
   weaponBarrel.getWorldPosition(shotOrigin)
   const tracerDirection = end.clone().sub(shotOrigin)
-  const tracerLength = tracerDirection.length()
   const smokeGroup = new THREE.Group()
   const smokePuffs: THREE.Mesh[] = []
   const smokeSide = new THREE.Vector3().crossVectors(tracerDirection, camera.up).normalize()
@@ -280,7 +279,8 @@ function createTracer(end: THREE.Vector3): void {
     scene.remove(smokeGroup)
     smokePuffs.forEach((puff) => {
       puff.geometry.dispose()
-      puff.material.dispose()
+      const puffMaterial = puff.material as THREE.MeshBasicMaterial
+      puffMaterial.dispose()
     })
   })
 }
