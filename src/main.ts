@@ -279,6 +279,7 @@ type Projectile = {
   mesh: THREE.Mesh
   bornAt: number
   lastTrailAt: number
+  previousPosition: THREE.Vector3
 }
 
 const projectiles: Projectile[] = []
@@ -301,7 +302,7 @@ function spawnProjectile(direction: THREE.Vector3): void {
   mesh.position.copy(shotOrigin)
   scene.add(mesh)
   const now = performance.now() / 1000
-  projectiles.push({ body, mesh, bornAt: now, lastTrailAt: now })
+  projectiles.push({ body, mesh, bornAt: now, lastTrailAt: now, previousPosition: shotOrigin.clone() })
   createTracer(mesh.position)
 }
 
@@ -317,7 +318,10 @@ function updateProjectiles(now: number): void {
     }
     const projectilePosition = projectile.mesh.position
     const hitRadius = targetRadius + projectileRadius
-    const hitTarget = target.visible && projectilePosition.distanceToSquared(target.position) <= hitRadius * hitRadius
+    const sweptPath = new THREE.Line3(projectile.previousPosition, projectilePosition)
+    const closestPoint = sweptPath.closestPointToPoint(target.position, true, new THREE.Vector3())
+    const hitTarget = target.visible && closestPoint.distanceToSquared(target.position) <= hitRadius * hitRadius
+    projectile.previousPosition.copy(projectilePosition)
     if (hitTarget) {
       registerTargetHit()
     }
