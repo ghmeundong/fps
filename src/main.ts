@@ -41,7 +41,7 @@ controls.pointerSpeed = 0.7
 scene.add(controls.object)
 
 const weapon = new THREE.Group()
-const weaponPosition = new THREE.Vector3(0.32, -0.27, -0.58)
+const weaponPosition = new THREE.Vector3(0.44, -0.27, -0.58)
 const weaponRotation = new THREE.Euler(-0.03, 0.04, 0.02)
 const hipPosition = weaponPosition.clone()
 const hipRotation = weaponRotation.clone()
