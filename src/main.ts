@@ -304,8 +304,10 @@ function fireShot(): void {
   aimPoint.copy(cameraOrigin).addScaledVector(shotDirection, projectileAimDistance)
   const movingAtShot = controls.isLocked && (keys.has('KeyW') || keys.has('KeyA') || keys.has('KeyS') || keys.has('KeyD'))
   const shotSpread = aiming ? 0.004 : movingAtShot ? 0.045 : 0.02
-  aimPoint.addScaledVector(cameraRight, (Math.random() - 0.5) * shotSpread * projectileAimDistance)
-  aimPoint.addScaledVector(cameraUp, (Math.random() - 0.5) * shotSpread * projectileAimDistance)
+  const horizontalSpread = (Math.random() - 0.5) * shotSpread * projectileAimDistance
+  const verticalSpread = (Math.random() - 0.5) * shotSpread * projectileAimDistance
+  aimPoint.addScaledVector(cameraRight, horizontalSpread)
+  aimPoint.addScaledVector(cameraUp, verticalSpread)
   shotDirection.copy(aimPoint).sub(shotOrigin).normalize()
   spawnProjectile(shotDirection)
   updateAimStats()
