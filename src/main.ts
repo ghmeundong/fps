@@ -246,7 +246,7 @@ function updateAimStats(): void {
 }
 
 function createTracer(end: THREE.Vector3): void {
-  camera.getWorldPosition(shotOrigin)
+  weaponBarrel.getWorldPosition(shotOrigin)
   const tracerDirection = end.clone().sub(shotOrigin)
   const tracerLength = tracerDirection.length()
   const tracerCenter = shotOrigin.clone().addScaledVector(tracerDirection, 0.5)
