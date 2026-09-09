@@ -89,7 +89,16 @@ button { font: inherit; }
 .menu-choice-button:hover strong { color: #ffffff; }
 .menu-choice-button strong { font-size: 10px; font-weight: 500; letter-spacing: 1px; }
 .menu-choice-button span { color: #64717a; font-size: 9px; letter-spacing: 1px; }
-.mode-menu .mode-select { width: min(460px, 100%); gap: 4px; }
+.mode-menu h1 { margin-bottom: 26px; }
+.mode-layout { display: grid; width: min(680px, 100%); grid-template-columns: 190px minmax(300px, 1fr); gap: 34px; }
+.mode-category-nav { display: flex; flex-direction: column; gap: 4px; }
+.mode-category-button { padding: 10px 11px; border: 1px solid transparent; color: #82909a; background: transparent; cursor: pointer; text-align: left; font-size: 9px; letter-spacing: 1px; }
+.mode-category-button:hover, .mode-category-button.is-active { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
+.mode-category-content { min-width: 0; }
+.mode-panel { display: none; max-width: 460px; }
+.mode-panel.is-visible { display: block; }
+.mode-panel h2 { margin: 0 0 14px; color: #ffffff; font-size: 10px; letter-spacing: 2px; font-weight: 500; }
+.mode-menu .mode-select { width: 100%; gap: 4px; }
 .mode-menu .mode-button { padding: 10px 12px; text-align: left; }
 .settings-close { position: absolute; z-index: 4; top: 24px; right: 26px; width: 34px; height: 34px; padding: 0; border: 1px solid #293139; color: #f1f4f5; background: rgba(17, 23, 29, .6); cursor: pointer; font-size: 22px; line-height: 1; }
 .settings-close:hover { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
@@ -125,4 +134,4 @@ button { font: inherit; }
 .mode-button { padding: 7px 10px; border: 1px solid #293139; color: #82909a; background: transparent; cursor: pointer; font-size: 9px; letter-spacing: 1px; transition: color .2s, border-color .2s, background .2s; }
 .mode-button:hover, .mode-button.is-active { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
 
-@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; padding: 0 14px; } .session-status { display: none; } .range-shell { inset: 58px 18px 18px; } .range { width: min(100%, calc((100svh - 76px) * 16 / 9)); height: min(100%, calc((100vw - 36px) * 9 / 16)); } .start-button { right: 16px; top: 16px; } .fullscreen-button { top: 16px; right: 16px; } .settings-button { top: 16px; left: 16px; } .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } .mode-button { padding: 6px 7px; font-size: 8px; } .menu-view { padding: 28px 24px 36px; } .settings-content { min-width: 0; padding: 28px 24px 36px; } .settings-layout { grid-template-columns: 1fr; gap: 20px; } .settings-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .weapon-preview { border-left: 0; padding-left: 0; } }
+@media (max-width: 600px) { .aim-lab { padding: 0 14px; } .topbar { height: 58px; padding: 0 14px; } .session-status { display: none; } .range-shell { inset: 58px 18px 18px; } .range { width: min(100%, calc((100svh - 76px) * 16 / 9)); height: min(100%, calc((100vw - 36px) * 9 / 16)); } .start-button { right: 16px; top: 16px; } .fullscreen-button { top: 16px; right: 16px; } .settings-button { top: 16px; left: 16px; } .hud-left { left: 16px; } .hud-right { right: 16px; } .sensitivity-control { bottom: 24px; } .mode-button { padding: 6px 7px; font-size: 8px; } .menu-view { padding: 28px 24px 36px; } .mode-layout { grid-template-columns: 1fr; gap: 20px; } .mode-category-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .settings-content { min-width: 0; padding: 28px 24px 36px; } .settings-layout { grid-template-columns: 1fr; gap: 20px; } .settings-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .weapon-preview { border-left: 0; padding-left: 0; } }

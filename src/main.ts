@@ -25,17 +25,18 @@ app.innerHTML = `
       <div class="settings-overlay" aria-hidden="true">
         <button class="settings-close" type="button" aria-label="Close settings" title="Close settings">×</button>
         <section class="menu-home menu-view is-visible" aria-label="Pause menu">
-          <div class="menu-kicker">AIM / LAB</div>
           <h1>PAUSED</h1>
           <div class="menu-choice-list"><button class="menu-choice-button" id="menu-mode-button" type="button"><strong>MODE SELECT</strong><span>Choose a training scenario</span></button><button class="menu-choice-button" id="menu-settings-button" type="button"><strong>ENVIRONMENT SETTINGS</strong><span>Adjust your range configuration</span></button></div>
         </section>
         <section class="mode-menu menu-view" aria-label="Mode selection">
-          <div class="menu-kicker">FLICKING</div>
           <h1>MODE SELECT</h1>
-          <div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div>
+          <div class="mode-layout">
+            <nav class="mode-category-nav" aria-label="Mode categories"><button class="mode-category-button is-active" data-mode-category="flicking" type="button">FLICKING</button></nav>
+            <div class="mode-category-content"><section class="mode-panel is-visible" data-mode-panel="flicking"><h2>FLICKING</h2><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div></section></div>
+          </div>
         </section>
         <div class="settings-content">
-          <div class="settings-heading"><span>ENVIRONMENT SETTINGS</span><small>AIM / LAB CONFIGURATION</small></div>
+          <div class="settings-heading"><span>ENVIRONMENT SETTINGS</span></div>
           <div class="settings-layout">
             <nav class="settings-nav" aria-label="Settings categories"><button class="settings-category is-active" data-category="display" type="button">DISPLAY &amp; GRAPHICS</button><button class="settings-category" data-category="weapon" type="button">WEAPON &amp; BALLISTICS</button><button class="settings-category" data-category="controls" type="button">MOUSE &amp; CONTROLS</button><button class="settings-category" data-category="crosshair" type="button">CROSSHAIR</button><button class="settings-category" data-category="targets" type="button">TARGETS &amp; ENVIRONMENT</button><button class="settings-category" data-category="sound" type="button">SOUND</button></nav>
             <div class="settings-category-content">
@@ -66,6 +67,8 @@ const modeMenu = document.querySelector<HTMLElement>('.mode-menu')!
 const settingsContent = document.querySelector<HTMLElement>('.settings-content')!
 const menuModeButton = document.querySelector<HTMLButtonElement>('#menu-mode-button')!
 const menuSettingsButton = document.querySelector<HTMLButtonElement>('#menu-settings-button')!
+const modeCategoryButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-category-button')]
+const modeCategoryPanels = [...document.querySelectorAll<HTMLElement>('[data-mode-panel]')]
 let activeMenuView: 'home' | 'mode' | 'settings' = 'home'
 const weaponPreviewCanvas = document.querySelector<HTMLCanvasElement>('#weapon-preview-canvas')!
 const fullscreenButton = document.querySelector<HTMLButtonElement>('.fullscreen-button')!
@@ -999,6 +1002,14 @@ modeButtons.forEach((button) => {
     setShootingMode(button.dataset.mode as ShootingMode)
     closeMenu()
     controls.lock(rawInputEnabled)
+  })
+})
+
+modeCategoryButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const category = button.dataset.modeCategory
+    modeCategoryButtons.forEach((categoryButton) => categoryButton.classList.toggle('is-active', categoryButton === button))
+    modeCategoryPanels.forEach((panel) => panel.classList.toggle('is-visible', panel.dataset.modePanel === category))
   })
 })
 
