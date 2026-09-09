@@ -49,23 +49,31 @@ const adsPosition = new THREE.Vector3(0, -0.19, -0.48)
 const adsRotation = new THREE.Euler(0, 0, 0)
 const weaponBodyMaterial = new THREE.MeshStandardMaterial({ color: '#090a0b', roughness: 0.34, metalness: 0.78, fog: false })
 const weaponSlideMaterial = new THREE.MeshStandardMaterial({ color: '#17191b', roughness: 0.27, metalness: 0.88, fog: false })
-const weaponSlide = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.09, 0.57), weaponSlideMaterial)
-weaponSlide.position.set(0, 0.105, -0.2)
+const weaponBody = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.15, 0.52), weaponBodyMaterial)
+weaponBody.position.z = -0.18
+weaponBody.castShadow = true
+weapon.add(weaponBody)
+const weaponSlide = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.5), weaponSlideMaterial)
+weaponSlide.position.set(0, 0.11, -0.2)
 weapon.add(weaponSlide)
-const rearSight = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.02, 0.04), weaponBodyMaterial)
-rearSight.position.set(0, 0.166, 0.1)
-weapon.add(rearSight)
-const frontSight = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.025, 0.035), weaponBodyMaterial)
-frontSight.position.set(0, 0.17, -0.47)
-weapon.add(frontSight)
-const weaponGrip = new THREE.Mesh(new THREE.BoxGeometry(0.105, 0.25, 0.12), weaponBodyMaterial)
-weaponGrip.position.set(0, -0.07, 0.07)
-weaponGrip.rotation.x = -0.32
+const weaponGrip = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.3, 0.14), weaponBodyMaterial)
+weaponGrip.position.set(0, -0.16, 0.04)
+weaponGrip.rotation.x = -0.23
 weapon.add(weaponGrip)
-const weaponBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.032, 0.34, 12), weaponBodyMaterial)
+const weaponBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.28, 12), weaponBodyMaterial)
 weaponBarrel.rotation.x = Math.PI / 2
-weaponBarrel.position.set(0, 0.105, -0.65)
+weaponBarrel.position.set(0, 0.11, -0.55)
 weapon.add(weaponBarrel)
+const rearSightLeft = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.035, 0.055), weaponBodyMaterial)
+rearSightLeft.position.set(-0.035, 0.17, 0.01)
+weapon.add(rearSightLeft)
+const rearSightRight = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.035, 0.055), weaponBodyMaterial)
+rearSightRight.position.set(0.035, 0.17, 0.01)
+weapon.add(rearSightRight)
+const frontSight = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.032, 0.038), weaponBodyMaterial)
+frontSight.position.set(0, 0.16, -0.44)
+weapon.add(frontSight)
+weapon.scale.setScalar(0.85)
 weapon.position.copy(weaponPosition)
 weapon.rotation.copy(weaponRotation)
 camera.add(weapon)
@@ -137,10 +145,12 @@ controls.addEventListener('unlock', handleLockChange)
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.shadowMap.enabled = true
 
 scene.add(new THREE.HemisphereLight('#d9e6ff', '#10151c', 2.4))
 const keyLight = new THREE.DirectionalLight('#fff4df', 3)
 keyLight.position.set(-4, 7, 4)
+keyLight.castShadow = true
 scene.add(keyLight)
 
 const floor = new THREE.Mesh(
@@ -148,6 +158,7 @@ const floor = new THREE.Mesh(
   new THREE.MeshStandardMaterial({ color: '#171d24', roughness: 0.9 }),
 )
 floor.rotation.x = -Math.PI / 2
+floor.receiveShadow = true
 scene.add(floor)
 
 const grid = new THREE.GridHelper(2000, 200, '#33404a', '#1d252d')
