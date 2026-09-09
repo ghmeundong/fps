@@ -290,6 +290,11 @@ function fireShot(): void {
   shotsFired += 1
   camera.getWorldPosition(shotOrigin)
   camera.getWorldDirection(shotDirection)
+  const movingAtShot = controls.isLocked && (keys.has('KeyW') || keys.has('KeyA') || keys.has('KeyS') || keys.has('KeyD'))
+  const shotSpread = aiming ? 0.004 : movingAtShot ? 0.045 : 0.02
+  shotDirection.x += (Math.random() - 0.5) * shotSpread
+  shotDirection.y += (Math.random() - 0.5) * shotSpread
+  shotDirection.normalize()
   raycaster.set(shotOrigin, shotDirection)
   const hit = raycaster.intersectObject(target, false)[0]
   const tracerEnd = hit ? hit.point : shotOrigin.clone().addScaledVector(shotDirection, 45)
@@ -301,6 +306,12 @@ function fireShot(): void {
     impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
     target.position.copy(impactOffset)
     targetRing.position.copy(target.position)
+    target.visible = false
+    targetRing.visible = false
+    gsap.delayedCall(0.28, () => {
+      target.visible = true
+      targetRing.visible = true
+    })
   }
 
   spawnProjectile()
@@ -345,7 +356,7 @@ function render(): void {
   }
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
-  const crosshairGap = aiming ? 2 : isMoving ? 14 : 8
+  const crosshairGap = aiming ? 6 : isMoving ? 24 : 14
   crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   const swayAmount = isMoving ? (aiming ? 0.008 : 0.018) : 0
   weapon.position.set(

@@ -53,10 +53,10 @@ button { font: inherit; }
 .sensitivity-control { position: absolute; z-index: 4; left: 50%; bottom: 28px; display: flex; align-items: center; gap: 9px; transform: translateX(-50%); color: #82909a; font-size: 9px; letter-spacing: 1.5px; }
 .sensitivity-control output { min-width: 27px; color: #f1f4f5; }
 .sensitivity-control input { width: 90px; accent-color: #e6654d; cursor: pointer; }
-.crosshair { --crosshair-gap: 8px; position: absolute; z-index: 3; inset: 50% auto auto 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.crosshair { --crosshair-gap: 14px; position: absolute; z-index: 3; inset: 50% auto auto 50%; width: 64px; height: 64px; transform: translate(-50%, -50%); }
 .crosshair::before, .crosshair::after, .crosshair span, .crosshair i { position: absolute; content: ''; background: rgba(242, 245, 244, .9); }
-.crosshair::before { width: 1px; height: 8px; top: calc(22px - var(--crosshair-gap) - 8px); left: 21px; transition: top .12s ease; } .crosshair::after { width: 1px; height: 8px; bottom: calc(22px - var(--crosshair-gap) - 8px); left: 21px; transition: bottom .12s ease; }
-.crosshair span { width: 8px; height: 1px; left: calc(22px - var(--crosshair-gap) - 8px); top: 21px; transition: left .12s ease; } .crosshair i { width: 8px; height: 1px; right: calc(22px - var(--crosshair-gap) - 8px); top: 21px; transition: right .12s ease; }
+.crosshair::before { width: 1px; height: 8px; top: calc(32px - var(--crosshair-gap) - 8px); left: 31px; transition: top .12s ease; } .crosshair::after { width: 1px; height: 8px; bottom: calc(32px - var(--crosshair-gap) - 8px); left: 31px; transition: bottom .12s ease; }
+.crosshair span { width: 8px; height: 1px; left: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: left .12s ease; } .crosshair i { width: 8px; height: 1px; right: calc(32px - var(--crosshair-gap) - 8px); top: 31px; transition: right .12s ease; }
 .start-button { position: absolute; z-index: 4; right: 26px; top: 24px; padding: 11px 15px; border: 1px solid #b84e3d; color: #f4d9d2; background: rgba(120, 42, 32, .45); cursor: pointer; font-size: 10px; letter-spacing: 1.5px; transition: background .2s, border-color .2s; }
 .start-button:hover { border-color: #f17a61; background: rgba(170, 54, 39, .7); } .start-button span { margin-left: 12px; font-size: 14px; }
 .bottombar { height: 58px; font-size: 9px; letter-spacing: 1.5px; }
