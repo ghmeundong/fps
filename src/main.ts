@@ -306,7 +306,7 @@ function createTracer(end: THREE.Vector3): void {
 
 function fireShot(): void {
   shotsFired += 1
-  camera.getWorldPosition(shotOrigin)
+  weaponBarrel.getWorldPosition(shotOrigin)
   camera.getWorldDirection(shotDirection)
   const movingAtShot = controls.isLocked && (keys.has('KeyW') || keys.has('KeyA') || keys.has('KeyS') || keys.has('KeyD'))
   const shotSpread = aiming ? 0.004 : movingAtShot ? 0.045 : 0.02
