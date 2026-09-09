@@ -249,29 +249,40 @@ function createTracer(end: THREE.Vector3): void {
   weaponBarrel.getWorldPosition(shotOrigin)
   const tracerDirection = end.clone().sub(shotOrigin)
   const tracerLength = tracerDirection.length()
-  const tracerCenter = shotOrigin.clone().addScaledVector(tracerDirection, 0.5)
-  const tracerGroup = new THREE.Group()
-  const tracerOuter = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.018, 0.018, tracerLength, 8),
-    new THREE.MeshBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 0.8, depthTest: false, depthWrite: false, fog: false }),
-  )
-  const tracerCore = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.007, 0.007, tracerLength, 8),
-    new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 1, depthTest: false, depthWrite: false, fog: false }),
-  )
-  tracerGroup.add(tracerOuter, tracerCore)
-  const tracerMeshes = [tracerOuter, tracerCore]
-  tracerGroup.position.copy(tracerCenter)
-  tracerGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tracerDirection.normalize())
-  tracerGroup.renderOrder = 10
-  scene.add(tracerGroup)
-  gsap.to(tracerMeshes.map((mesh) => mesh.material), { opacity: 0, duration: 0.35, onComplete: () => {
-    scene.remove(tracerGroup)
-    tracerMeshes.forEach((mesh) => {
-      mesh.geometry.dispose()
-      mesh.material.dispose()
+  const smokeGroup = new THREE.Group()
+  const smokePuffs: THREE.Mesh[] = []
+  const smokeSide = new THREE.Vector3().crossVectors(tracerDirection, camera.up).normalize()
+  const smokeUp = new THREE.Vector3().crossVectors(smokeSide, tracerDirection).normalize()
+  const normalizedDirection = tracerDirection.clone().normalize()
+
+  for (let puffIndex = 0; puffIndex < 10; puffIndex += 1) {
+    const progress = puffIndex / 10
+    const puffPosition = shotOrigin.clone().addScaledVector(tracerDirection, progress)
+    puffPosition.addScaledVector(smokeSide, (Math.random() - 0.5) * 0.11)
+    puffPosition.addScaledVector(smokeUp, (Math.random() - 0.5) * 0.11)
+    const puffMaterial = new THREE.MeshBasicMaterial({ color: '#aeb4b5', transparent: true, opacity: 0.22, depthTest: false, depthWrite: false, fog: false })
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(0.035 + Math.random() * 0.045, 8, 6), puffMaterial)
+    puff.position.copy(puffPosition)
+    puff.renderOrder = 10
+    smokeGroup.add(puff)
+    smokePuffs.push(puff)
+
+    const drift = smokeSide.clone().multiplyScalar((Math.random() - 0.5) * 0.35)
+    drift.addScaledVector(smokeUp, 0.18 + Math.random() * 0.24)
+    drift.addScaledVector(normalizedDirection, 0.12 + Math.random() * 0.2)
+    gsap.to(puff.position, { x: puffPosition.x + drift.x, y: puffPosition.y + drift.y, z: puffPosition.z + drift.z, duration: 0.5, delay: puffIndex * 0.015, ease: 'sine.out' })
+    gsap.to(puff.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.5, delay: puffIndex * 0.015, ease: 'sine.out' })
+    gsap.to(puffMaterial, { opacity: 0, duration: 0.5, delay: puffIndex * 0.015 })
+  }
+
+  scene.add(smokeGroup)
+  gsap.delayedCall(0.75, () => {
+    scene.remove(smokeGroup)
+    smokePuffs.forEach((puff) => {
+      puff.geometry.dispose()
+      puff.material.dispose()
     })
-  } })
+  })
 }
 
 function fireShot(): void {
