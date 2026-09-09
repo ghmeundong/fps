@@ -458,7 +458,6 @@ function render(): void {
   }
 
   renderer.render(scene, camera)
-  requestAnimationFrame(render)
 }
 
-render()
+renderer.setAnimationLoop(render)
