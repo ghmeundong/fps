@@ -195,9 +195,9 @@ document.addEventListener('keyup', handleKeyUp)
 controls.addEventListener('lock', handleLockChange)
 controls.addEventListener('unlock', handleLockChange)
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-renderer.shadowMap.enabled = true
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' })
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+renderer.shadowMap.enabled = false
 
 scene.add(new THREE.HemisphereLight('#d9e6ff', '#10151c', 2.4))
 const keyLight = new THREE.DirectionalLight('#fff4df', 3)
