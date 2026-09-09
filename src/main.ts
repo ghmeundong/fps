@@ -203,7 +203,7 @@ const projectileVelocity = 90
 const projectileLifetime = 3
 
 function spawnProjectile(): void {
-  camera.getWorldPosition(shotOrigin)
+  weaponBarrel.getWorldPosition(shotOrigin)
   camera.getWorldDirection(shotDirection)
   const bodyDescription = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(shotOrigin.x, shotOrigin.y, shotOrigin.z)
