@@ -15,8 +15,8 @@ app.innerHTML = `
       <canvas id="range-canvas" aria-label="FPS training range"></canvas>
       <div class="crosshair" aria-hidden="true"><span></span><i></i></div>
       <div class="range-label">TRAINING RANGE <span>01</span></div>
-      <div class="hud hud-left"><span class="hud-caption">ACCURACY</span><strong>--.-%</strong></div>
-      <div class="hud hud-right"><span class="hud-caption">SCORE</span><strong>000000</strong></div>
+      <div class="hud hud-left"><span class="hud-caption">ACCURACY</span><strong id="accuracy-value">--.-%</strong></div>
+      <div class="hud hud-right"><span class="hud-caption">SCORE</span><strong id="score-value">000000</strong></div>
       <label class="sensitivity-control">SENS <output id="sensitivity-value">0.70</output><input id="sensitivity" type="range" min="0.2" max="1.5" step="0.05" value="0.7" aria-label="Mouse sensitivity"></label>
       <button class="start-button" type="button">ENTER RANGE <span>↗</span></button>
     </section>
@@ -30,6 +30,8 @@ const startButton = document.querySelector<HTMLButtonElement>('.start-button')!
 const sessionLabel = document.querySelector<HTMLSpanElement>('#session-label')!
 const sensitivityInput = document.querySelector<HTMLInputElement>('#sensitivity')!
 const sensitivityValue = document.querySelector<HTMLOutputElement>('#sensitivity-value')!
+const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
+const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
 scene.fog = new THREE.Fog('#0b0e12', 14, 52)
@@ -90,6 +92,7 @@ function setAiming(nextAiming: boolean): void {
 
 function handlePointerDown(event: PointerEvent): void {
   if (event.button === 2 && controls.isLocked) setAiming(true)
+  if (event.button === 0 && controls.isLocked) fireShot()
 }
 
 function handlePointerUp(event: PointerEvent): void {
@@ -181,6 +184,68 @@ const targetRing = new THREE.Mesh(
 targetRing.position.copy(target.position)
 targetRing.rotation.x = Math.PI / 2
 scene.add(targetRing)
+
+const raycaster = new THREE.Raycaster()
+const shotDirection = new THREE.Vector3()
+const shotOrigin = new THREE.Vector3()
+const impactOffset = new THREE.Vector3()
+let shotsFired = 0
+let shotsHit = 0
+let score = 0
+
+function updateAimStats(): void {
+  const accuracy = shotsFired === 0 ? '--.-' : ((shotsHit / shotsFired) * 100).toFixed(1)
+  accuracyValue.textContent = `${accuracy}%`
+  scoreValue.textContent = score.toString().padStart(6, '0')
+}
+
+function createTracer(end: THREE.Vector3): void {
+  camera.getWorldPosition(shotOrigin)
+  const tracerGeometry = new THREE.BufferGeometry().setFromPoints([shotOrigin.clone(), end.clone()])
+  const tracer = new THREE.Line(tracerGeometry, new THREE.LineBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 0.9 }))
+  scene.add(tracer)
+  gsap.to(tracer.material, { opacity: 0, duration: 0.09, onComplete: () => {
+    scene.remove(tracer)
+    tracer.geometry.dispose()
+    tracer.material.dispose()
+  } })
+}
+
+function createImpact(position: THREE.Vector3): void {
+  const impact = new THREE.Mesh(
+    new THREE.SphereGeometry(0.075, 12, 8),
+    new THREE.MeshBasicMaterial({ color: '#f7c95a', transparent: true, opacity: 1 }),
+  )
+  impact.position.copy(position)
+  scene.add(impact)
+  gsap.to(impact.scale, { x: 2.8, y: 2.8, z: 2.8, duration: 0.16, ease: 'power2.out' })
+  gsap.to(impact.material, { opacity: 0, duration: 0.18, onComplete: () => {
+    scene.remove(impact)
+    impact.geometry.dispose()
+    impact.material.dispose()
+  } })
+}
+
+function fireShot(): void {
+  shotsFired += 1
+  camera.getWorldPosition(shotOrigin)
+  camera.getWorldDirection(shotDirection)
+  raycaster.set(shotOrigin, shotDirection)
+  const hit = raycaster.intersectObject(target, false)[0]
+  const tracerEnd = hit ? hit.point : shotOrigin.clone().addScaledVector(shotDirection, 45)
+  createTracer(tracerEnd)
+
+  if (hit) {
+    shotsHit += 1
+    score += 100
+    createImpact(hit.point)
+    impactOffset.set((Math.random() - 0.5) * 8, 1.4 + Math.random() * 2.2, -10 - Math.random() * 12)
+    target.position.copy(impactOffset)
+    targetRing.position.copy(target.position)
+  }
+
+  updateAimStats()
+}
 
 function resizeRenderer(): void {
   const width = canvas.clientWidth
