@@ -77,6 +77,16 @@ const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const modeButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-button')]
 const settingsCategoryButtons = [...document.querySelectorAll<HTMLButtonElement>('.settings-category')]
 const settingsCategoryPanels = [...document.querySelectorAll<HTMLElement>('[data-category-panel]')]
+const weaponCategoryButton = settingsCategoryButtons.find((button) => button.dataset.category === 'weapon')
+const displayCategoryButton = settingsCategoryButtons.find((button) => button.dataset.category === 'display')
+const settingsCategoryNav = weaponCategoryButton?.parentElement
+if (weaponCategoryButton && displayCategoryButton && settingsCategoryNav) settingsCategoryNav.insertBefore(weaponCategoryButton, displayCategoryButton)
+const weaponCategoryPanel = settingsCategoryPanels.find((panel) => panel.dataset.categoryPanel === 'weapon')
+const displayCategoryPanel = settingsCategoryPanels.find((panel) => panel.dataset.categoryPanel === 'display')
+const settingsCategoryContent = weaponCategoryPanel?.parentElement
+if (weaponCategoryPanel && displayCategoryPanel && settingsCategoryContent) settingsCategoryContent.insertBefore(weaponCategoryPanel, displayCategoryPanel)
+settingsCategoryButtons.forEach((button) => button.classList.toggle('is-active', button === weaponCategoryButton))
+settingsCategoryPanels.forEach((panel) => panel.classList.toggle('is-visible', panel === weaponCategoryPanel))
 const fovSetting = document.querySelector<HTMLInputElement>('#fov-setting')!
 const fovValue = document.querySelector<HTMLOutputElement>('#fov-value')!
 const bulletSpeedSetting = document.querySelector<HTMLInputElement>('#bullet-speed-setting')!
