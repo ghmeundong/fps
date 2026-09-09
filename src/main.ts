@@ -31,8 +31,8 @@ app.innerHTML = `
         <section class="mode-menu menu-view" aria-label="Mode selection">
           <h1>MODE SELECT</h1>
           <div class="mode-layout">
-            <nav class="mode-category-nav" aria-label="Mode categories"><button class="mode-category-button is-active" data-mode-category="flicking" type="button">FLICKING</button></nav>
-            <div class="mode-category-content"><section class="mode-panel is-visible" data-mode-panel="flicking"><h2>FLICKING</h2><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div></section></div>
+            <nav class="mode-category-nav" aria-label="Mode categories"><button class="mode-category-button is-active" data-mode-category="flicking" type="button">FLICKING</button><button class="mode-category-button" data-mode-category="tracking" type="button">TRACKING</button></nav>
+            <div class="mode-category-content"><section class="mode-panel is-visible" data-mode-panel="flicking"><h2>FLICKING</h2><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div></section><section class="mode-panel" data-mode-panel="tracking"><h2>TRACKING</h2><div class="mode-select" role="group" aria-label="Tracking modes"><button class="mode-button" data-mode="strafetrack" type="button">STRAFETRACK</button><button class="mode-button" data-mode="spheretrack" type="button">SPHERETRACK</button><button class="mode-button" data-mode="fallingtrack" type="button">FALLING TRACK</button></div></section></div>
           </div>
         </section>
         <div class="settings-content">
@@ -41,10 +41,10 @@ app.innerHTML = `
             <nav class="settings-nav" aria-label="Settings categories"><button class="settings-category is-active" data-category="display" type="button">DISPLAY &amp; GRAPHICS</button><button class="settings-category" data-category="weapon" type="button">WEAPON &amp; BALLISTICS</button><button class="settings-category" data-category="controls" type="button">MOUSE &amp; CONTROLS</button><button class="settings-category" data-category="crosshair" type="button">CROSSHAIR</button><button class="settings-category" data-category="targets" type="button">TARGETS &amp; ENVIRONMENT</button><button class="settings-category" data-category="sound" type="button">SOUND</button></nav>
             <div class="settings-category-content">
               <section class="settings-group settings-panel-group is-visible" data-category-panel="display"><h2>DISPLAY &amp; GRAPHICS</h2><label>RENDER DISTANCE <output id="render-distance-value">600</output><input id="render-distance-setting" type="range" min="100" max="600" step="10" value="600"></label><label>FOV <output id="fov-value">65</output><input id="fov-setting" type="range" min="45" max="103" step="1" value="65"></label><label>RESOLUTION SCALE <output id="resolution-scale-value">100%</output><input id="resolution-scale-setting" type="range" min="50" max="150" step="5" value="100"></label><label>MAX FPS <select id="max-fps-setting"><option value="0">UNLIMITED</option><option value="60">60</option><option value="144">144</option><option value="240">240</option></select></label><label class="toggle-row">ANTI-ALIASING <input id="antialiasing-setting" type="checkbox" checked></label></section>
-              <section class="settings-group settings-panel-group" data-category-panel="weapon"><h2>WEAPON &amp; BALLISTICS</h2><div class="weapon-preview"><h2>CURRENT WEAPON</h2><canvas id="weapon-preview-canvas" aria-label="Current weapon preview"></canvas><strong>COLT 1911</strong></div><label>HITSCAN / PROJECTILE <select id="fire-mode-setting"><option value="projectile">PROJECTILE</option><option value="hitscan">HITSCAN</option></select></label><label>BULLET SPEED <output id="bullet-speed-value">253</output><input id="bullet-speed-setting" type="range" min="50" max="500" step="1" value="253"></label><label>RECOIL <output id="recoil-value">50%</output><input id="recoil-setting" type="range" min="0" max="100" value="50"></label><label>SPREAD <output id="spread-value">50%</output><input id="spread-setting" type="range" min="0" max="100" value="50"></label><label>MOVEMENT SPREAD <output id="movement-spread-value">225%</output><input id="movement-spread-setting" type="range" min="100" max="500" value="225"></label><label>AIM JUMP SPREAD <output id="aiming-jump-spread-value">550%</output><input id="aiming-jump-spread-setting" type="range" min="100" max="800" value="550"></label><label>HIPFIRE JUMP SPREAD <output id="hipfire-jump-spread-value">450%</output><input id="hipfire-jump-spread-setting" type="range" min="100" max="800" value="450"></label><label>BULLET DROP <output id="bullet-drop-value">100%</output><input id="bullet-drop-setting" type="range" min="0" max="200" value="100"></label></section>
+              <section class="settings-group settings-panel-group" data-category-panel="weapon"><h2>WEAPON &amp; BALLISTICS</h2><div class="weapon-preview"><h2>CURRENT WEAPON</h2><canvas id="weapon-preview-canvas" aria-label="Current weapon preview"></canvas><strong id="current-weapon-name">COLT 1911</strong></div><label>WEAPON <select id="weapon-setting"><option value="auto">AUTO BY MODE</option><option value="pistol">PISTOL</option><option value="ak47">AK47</option></select></label><label>HITSCAN / PROJECTILE <select id="fire-mode-setting"><option value="projectile">PROJECTILE</option><option value="hitscan">HITSCAN</option></select></label><label>BULLET SPEED <output id="bullet-speed-value">253</output><input id="bullet-speed-setting" type="range" min="50" max="500" step="1" value="253"></label><label>RECOIL <output id="recoil-value">50%</output><input id="recoil-setting" type="range" min="0" max="100" value="50"></label><label>SPREAD <output id="spread-value">50%</output><input id="spread-setting" type="range" min="0" max="100" value="50"></label><label>MOVEMENT SPREAD <output id="movement-spread-value">225%</output><input id="movement-spread-setting" type="range" min="100" max="500" value="225"></label><label>AIM JUMP SPREAD <output id="aiming-jump-spread-value">550%</output><input id="aiming-jump-spread-setting" type="range" min="100" max="800" value="550"></label><label>HIPFIRE JUMP SPREAD <output id="hipfire-jump-spread-value">450%</output><input id="hipfire-jump-spread-setting" type="range" min="100" max="800" value="450"></label><label>BULLET DROP <output id="bullet-drop-value">100%</output><input id="bullet-drop-setting" type="range" min="0" max="200" value="100"></label></section>
               <section class="settings-group settings-panel-group" data-category-panel="controls"><h2>MOUSE &amp; CONTROLS</h2><label>SENSITIVITY <output id="settings-sensitivity-value">0.70</output><input id="settings-sensitivity" type="range" min="0.2" max="1.5" step="0.05" value="0.7"></label><label>DPI MULTIPLIER <output id="dpi-value">800</output><input id="dpi-setting" type="range" min="100" max="3200" step="100" value="800"></label><label>ADS RATIO <output id="ads-ratio-value">1.00</output><input id="ads-ratio-setting" type="range" min="0.1" max="2" step="0.05" value="1"></label><label>ADS FOV <output id="ads-fov-value">48</output><input id="ads-fov-setting" type="range" min="30" max="65" step="1" value="48"></label><label class="toggle-row">RAW INPUT <input id="raw-input-setting" type="checkbox" checked></label></section>
               <section class="settings-group settings-panel-group" data-category-panel="crosshair"><h2>CROSSHAIR</h2><label>STYLE <select id="crosshair-style-setting"><option>DOT + CROSS</option><option>DOT</option><option>CROSS</option><option>CIRCLE</option></select></label><label>COLOR <input id="crosshair-color-setting" type="color" value="#ffffff"></label><label>GAP <output id="crosshair-gap-value">14px</output><input id="crosshair-gap-setting" type="range" min="0" max="30" value="14"></label><label>LENGTH <output id="crosshair-length-value">8px</output><input id="crosshair-length-setting" type="range" min="2" max="24" value="8"></label><label>THICKNESS <output id="crosshair-thickness-value">1px</output><input id="crosshair-thickness-setting" type="range" min="1" max="5" value="1"></label><label>DOT SIZE <output id="crosshair-dot-size-value">5px</output><input id="crosshair-dot-size-setting" type="range" min="1" max="12" value="5"></label><label>CIRCLE SIZE <output id="crosshair-circle-size-value">30px</output><input id="crosshair-circle-size-setting" type="range" min="8" max="58" value="30"></label><label>OPACITY <output id="crosshair-opacity-value">90%</output><input id="crosshair-opacity-setting" type="range" min="10" max="100" value="90"></label><label>OUTLINE COLOR <input id="crosshair-outline-color-setting" type="color" value="#000000"></label><label>OUTLINE THICKNESS <output id="crosshair-outline-thickness-value">0px</output><input id="crosshair-outline-thickness-setting" type="range" min="0" max="4" value="0"></label><label class="toggle-row">DYNAMIC RESPONSE <input id="crosshair-dynamic-setting" type="checkbox" checked></label><label>DYNAMIC STRENGTH <output id="crosshair-dynamic-strength-value">100%</output><input id="crosshair-dynamic-strength-setting" type="range" min="0" max="200" value="100"></label><h2>HIT MARKER</h2><label>COLOR <input id="hit-marker-color-setting" type="color" value="#67d68b"></label><label>SIZE <output id="hit-marker-size-value">36px</output><input id="hit-marker-size-setting" type="range" min="16" max="72" value="36"></label><label>LENGTH <output id="hit-marker-length-value">9px</output><input id="hit-marker-length-setting" type="range" min="3" max="24" value="9"></label><label>THICKNESS <output id="hit-marker-thickness-value">1px</output><input id="hit-marker-thickness-setting" type="range" min="1" max="5" value="1"></label><label>GAP <output id="hit-marker-gap-value">10px</output><input id="hit-marker-gap-setting" type="range" min="4" max="24" value="10"></label><label>FADE TIME <output id="hit-marker-duration-value">0.22s</output><input id="hit-marker-duration-setting" type="range" min="0.05" max="1" step="0.01" value="0.22"></label></section>
-              <section class="settings-group settings-panel-group" data-category-panel="targets"><h2>TARGETS &amp; ENVIRONMENT</h2><label>BACKGROUND <input id="background-color-setting" type="color" value="#0b0e12"></label><label>FLOOR <input id="floor-color-setting" type="color" value="#171d24"></label><label>GRID <input id="grid-color-setting" type="color" value="#33404a"></label><label>TARGET <input id="target-color-setting" type="color" value="#e33f32"></label><label>TARGET SIZE <output id="target-size-value">100%</output><input id="target-size-setting" type="range" min="50" max="150" value="100"></label></section>
+              <section class="settings-group settings-panel-group" data-category-panel="targets"><h2>TARGETS &amp; ENVIRONMENT</h2><label>BACKGROUND <input id="background-color-setting" type="color" value="#0b0e12"></label><label>FLOOR <input id="floor-color-setting" type="color" value="#171d24"></label><label>GRID <input id="grid-color-setting" type="color" value="#33404a"></label><label>TARGET <input id="target-color-setting" type="color" value="#e33f32"></label><label>TARGET SIZE <output id="target-size-value">100%</output><input id="target-size-setting" type="range" min="50" max="150" value="100"></label><label>TRACKING SPEED <output id="tracking-speed-value">4.0</output><input id="tracking-speed-setting" type="range" min="1" max="10" step="0.5" value="4"></label><label>FALLING HORIZONTAL FORCE <output id="falling-horizontal-force-value">3.4</output><input id="falling-horizontal-force-setting" type="range" min="0" max="8" step="0.1" value="3.4"></label><label>FALLING LAUNCH <output id="falling-launch-value">12.0</output><input id="falling-launch-setting" type="range" min="0" max="20" step="0.5" value="12"></label><label>FALLING GRAVITY <output id="falling-gravity-value">18.0</output><input id="falling-gravity-setting" type="range" min="1" max="36" step="0.5" value="18"></label><label>FALLING RESPAWN DELAY <output id="falling-respawn-delay-value">0.60s</output><input id="falling-respawn-delay-setting" type="range" min="0.1" max="2" step="0.05" value="0.6"></label></section>
               <section class="settings-group settings-panel-group" data-category-panel="sound"><h2>SOUND</h2><label>GUNSHOT VOLUME <output id="gunshot-volume-value">50%</output><input id="gunshot-volume-setting" type="range" min="0" max="100" value="50"></label></section>
             </div>
           </div>
@@ -90,6 +90,15 @@ const resolutionScaleValue = document.querySelector<HTMLOutputElement>('#resolut
 const antialiasingSetting = document.querySelector<HTMLInputElement>('#antialiasing-setting')!
 const maxFpsSetting = document.querySelector<HTMLSelectElement>('#max-fps-setting')!
 const fireModeSetting = document.querySelector<HTMLSelectElement>('#fire-mode-setting')!
+const weaponSetting = document.querySelector<HTMLSelectElement>('#weapon-setting')!
+const currentWeaponName = document.querySelector<HTMLElement>('#current-weapon-name')!
+const recoilModeSetting = document.createElement('select')
+recoilModeSetting.id = 'recoil-mode-setting'
+recoilModeSetting.innerHTML = '<option value="recover">KICK + RECOVER</option><option value="sustained">SUSTAINED</option>'
+const recoilModeLabel = document.createElement('label')
+recoilModeLabel.textContent = 'RECOIL MODE '
+recoilModeLabel.append(recoilModeSetting)
+bulletSpeedSetting.closest('label')?.before(recoilModeLabel)
 const recoilSetting = document.querySelector<HTMLInputElement>('#recoil-setting')!
 const recoilValue = document.querySelector<HTMLOutputElement>('#recoil-value')!
 const spreadSetting = document.querySelector<HTMLInputElement>('#spread-setting')!
@@ -102,6 +111,16 @@ const hipfireJumpSpreadSetting = document.querySelector<HTMLInputElement>('#hipf
 const hipfireJumpSpreadValue = document.querySelector<HTMLOutputElement>('#hipfire-jump-spread-value')!
 const bulletDropSetting = document.querySelector<HTMLInputElement>('#bullet-drop-setting')!
 const bulletDropValue = document.querySelector<HTMLOutputElement>('#bullet-drop-value')!
+const trackingSpeedSetting = document.querySelector<HTMLInputElement>('#tracking-speed-setting')!
+const trackingSpeedValue = document.querySelector<HTMLOutputElement>('#tracking-speed-value')!
+const fallingHorizontalForceSetting = document.querySelector<HTMLInputElement>('#falling-horizontal-force-setting')!
+const fallingHorizontalForceValue = document.querySelector<HTMLOutputElement>('#falling-horizontal-force-value')!
+const fallingLaunchSetting = document.querySelector<HTMLInputElement>('#falling-launch-setting')!
+const fallingLaunchValue = document.querySelector<HTMLOutputElement>('#falling-launch-value')!
+const fallingGravitySetting = document.querySelector<HTMLInputElement>('#falling-gravity-setting')!
+const fallingGravityValue = document.querySelector<HTMLOutputElement>('#falling-gravity-value')!
+const fallingRespawnDelaySetting = document.querySelector<HTMLInputElement>('#falling-respawn-delay-setting')!
+const fallingRespawnDelayValue = document.querySelector<HTMLOutputElement>('#falling-respawn-delay-value')!
 const targetSizeSetting = document.querySelector<HTMLInputElement>('#target-size-setting')!
 const targetSizeValue = document.querySelector<HTMLOutputElement>('#target-size-value')!
 const backgroundColorSetting = document.querySelector<HTMLInputElement>('#background-color-setting')!
@@ -148,12 +167,37 @@ const rawInputSetting = document.querySelector<HTMLInputElement>('#raw-input-set
 const crosshairOutlineColorSetting = document.querySelector<HTMLInputElement>('#crosshair-outline-color-setting')!
 const crosshairOutlineThicknessSetting = document.querySelector<HTMLInputElement>('#crosshair-outline-thickness-setting')!
 const crosshairOutlineThicknessValue = document.querySelector<HTMLOutputElement>('#crosshair-outline-thickness-value')!
-type ShootingMode = 'microshot' | 'flickshot' | 'gridshot' | 'reflexshot'
+type ShootingMode = 'microshot' | 'flickshot' | 'gridshot' | 'reflexshot' | 'strafetrack' | 'spheretrack' | 'fallingtrack'
+type WeaponId = 'pistol' | 'ak47'
+type RecoilMode = 'recover' | 'sustained'
+type WeaponProfile = {
+  fireMode: 'projectile' | 'hitscan'
+  bulletSpeed: number
+  recoil: number
+  spread: number
+  movementSpread: number
+  aimingJumpSpread: number
+  hipfireJumpSpread: number
+  bulletDrop: number
+  recoilMode: RecoilMode
+}
+const weaponProfiles: Record<WeaponId, WeaponProfile> = {
+  pistol: { fireMode: 'projectile', bulletSpeed: 253, recoil: 50, spread: 75, movementSpread: 235, aimingJumpSpread: 350, hipfireJumpSpread: 250, bulletDrop: 100, recoilMode: 'recover' },
+  ak47: { fireMode: 'projectile', bulletSpeed: 710, recoil: 50, spread: 90, movementSpread: 235, aimingJumpSpread: 350, hipfireJumpSpread: 250, bulletDrop: 100, recoilMode: 'sustained' },
+}
 let shootingMode: ShootingMode = 'flickshot'
+let weaponSelection: 'auto' | WeaponId = 'auto'
+let activeWeapon: WeaponId = 'pistol'
 let fireMode: 'projectile' | 'hitscan' = 'projectile'
+let recoilMode: RecoilMode = 'recover'
 let recoilMultiplier = 1
 let spreadMultiplier = 1
 let gravityMultiplier = 1
+let trackingSpeed = 4
+let fallingHorizontalForce = 3.4
+let fallingLaunchSpeed = 12
+let fallingGravity = 18
+let fallingRespawnDelay = 0.6
 let maxFps = 0
 let targetSizeMultiplier = 1
 let hitVfxEnabled = true
@@ -235,8 +279,11 @@ const weaponPosition = new THREE.Vector3(0.44, -0.27, -0.58)
 const weaponRotation = new THREE.Euler(-0.03, 0.04, 0.02)
 const hipPosition = weaponPosition.clone()
 const hipRotation = weaponRotation.clone()
+const akHipRotation = new THREE.Euler(0.03, 0.04, 0.02)
 const adsPosition = new THREE.Vector3(0, -0.25, -0.47)
 const adsRotation = new THREE.Euler(-0.07, 0, 0)
+const akAdsPosition = new THREE.Vector3(0.025, -0.26, -0.54)
+const akAdsRotation = new THREE.Euler(0, 0, 0)
 const weaponBodyMaterial = new THREE.MeshStandardMaterial({ color: '#090a0b', roughness: 0.34, metalness: 0.78, fog: false })
 const weaponSlideMaterial = new THREE.MeshStandardMaterial({ color: '#17191b', roughness: 0.27, metalness: 0.88, fog: false })
 const weaponBody = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.15, 0.52), weaponBodyMaterial)
@@ -278,7 +325,10 @@ rearSightLeft.visible = false
 rearSightRight.visible = false
 frontSight.visible = false
 const pistolLoader = new FBXLoader()
-const activeWeaponModel: string = 'colt1911'
+let coltModel: THREE.Object3D | null = null
+let ak47Model: THREE.Object3D | null = null
+let currentWeaponModel: THREE.Object3D | null = null
+const weaponMuzzlePositions = new Map<WeaponId, THREE.Vector3>()
 const pistolModelUrl = new URL('./assets/SilencedPistol/_silencedPistol.fbx', import.meta.url).href
 pistolLoader.load(pistolModelUrl, (pistol) => {
   pistol.scale.setScalar(0.0008)
@@ -300,14 +350,13 @@ pistolLoader.load(pistolModelUrl, (pistol) => {
   muzzleFlash.position.copy(modelMuzzle.position)
   muzzleFlash.position.y += 0.22
   muzzleFlash.position.z -= 0.08
-  pistol.visible = activeWeaponModel === 'silenced'
+  pistol.visible = false
   weapon.add(pistol)
 }, undefined, (error) => {
   console.error('Failed to load SilencedPistol model.', error)
 })
 const coltLoader = new FBXLoader()
 const coltModelUrl = new URL('./assets/Colt1911/colt1911.fbx', import.meta.url).href
-let currentWeaponModel: THREE.Object3D | null = null
 coltLoader.load(coltModelUrl, (colt) => {
   colt.rotation.set(0, Math.PI, 0)
   colt.position.set(0, 0, 0)
@@ -343,11 +392,54 @@ coltLoader.load(coltModelUrl, (colt) => {
   muzzleFlash.position.copy(modelMuzzle.position)
   muzzleFlash.position.y += 0.22
   muzzleFlash.position.z -= 0.08
-  colt.visible = activeWeaponModel === 'colt1911'
+  colt.visible = false
+  coltModel = colt
+  weaponMuzzlePositions.set('pistol', modelMuzzle.position.clone())
   currentWeaponModel = colt
   weapon.add(colt)
+  applyWeaponSelection()
 }, undefined, (error) => {
   console.error('Failed to load Colt 1911 model or textures.', error)
+})
+const ak47Loader = new FBXLoader()
+const ak47ModelUrl = new URL('./assets/AK47/AK47NoSubdiv.fbx', import.meta.url).href
+ak47Loader.load(ak47ModelUrl, (ak47) => {
+  ak47.rotation.set(0, Math.PI, 0)
+  ak47.position.set(0, 0, 0)
+  ak47.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = false
+      object.frustumCulled = false
+      const materials = Array.isArray(object.material) ? object.material : [object.material]
+      const blackMaterials = materials.map((material) => new THREE.MeshStandardMaterial({
+        color: '#090909',
+        metalness: 0.76,
+        roughness: 0.34,
+        side: material.side,
+      }))
+      object.material = Array.isArray(object.material) ? blackMaterials : blackMaterials[0]
+    }
+  })
+  ak47.updateMatrixWorld(true)
+  const akBounds = new THREE.Box3().setFromObject(ak47)
+  const akSize = akBounds.getSize(new THREE.Vector3())
+  ak47.scale.setScalar(2.2 / Math.max(akSize.x, akSize.y, akSize.z))
+  ak47.updateMatrixWorld(true)
+  const scaledBounds = new THREE.Box3().setFromObject(ak47)
+  ak47.position.sub(scaledBounds.getCenter(new THREE.Vector3()))
+  ak47.updateMatrixWorld(true)
+  const akCenteredBounds = new THREE.Box3().setFromObject(ak47)
+  weaponMuzzlePositions.set('ak47', new THREE.Vector3(
+    (akCenteredBounds.min.x + akCenteredBounds.max.x) * 0.5,
+    (akCenteredBounds.min.y + akCenteredBounds.max.y) * 0.5,
+    Math.min(akCenteredBounds.min.z, akCenteredBounds.max.z) - 0.02,
+  ))
+  ak47.visible = false
+  ak47Model = ak47
+  weapon.add(ak47)
+  applyWeaponSelection()
+}, undefined, (error) => {
+  console.error('Failed to load AK47 model.', error)
 })
 weapon.scale.setScalar(0.72)
 weapon.position.copy(weaponPosition)
@@ -355,18 +447,88 @@ weapon.rotation.copy(weaponRotation)
 camera.add(weapon)
 
 const muzzleLocalPosition = new THREE.Vector3()
-const gunshotSound = new Audio(new URL('./assets/sounds/u_62htdrvg4y-gun-shot-359196.mp3', import.meta.url).href)
+const gunshotSounds: Record<WeaponId, HTMLAudioElement> = {
+  pistol: new Audio(new URL('./assets/sounds/freesound_community-9mm-pistol-shoot-short-reverb-7152.mp3', import.meta.url).href),
+  ak47: new Audio(new URL('./assets/sounds/freesound_community-ak-47-89833.mp3', import.meta.url).href),
+}
 let soundVolumeMultiplier = 0.5
-let gunshotReady = false
-gunshotSound.preload = 'auto'
-gunshotSound.volume = soundVolumeMultiplier
-gunshotSound.addEventListener('canplaythrough', () => {
-  gunshotReady = true
+const gunshotReady: Record<WeaponId, boolean> = { pistol: false, ak47: false }
+Object.entries(gunshotSounds).forEach(([weaponId, sound]) => {
+  sound.preload = 'auto'
+  sound.volume = soundVolumeMultiplier
+  sound.addEventListener('canplaythrough', () => {
+    gunshotReady[weaponId as WeaponId] = true
+  })
+  sound.load()
 })
-gunshotSound.load()
+
+function resolveWeaponForMode(mode: ShootingMode): WeaponId {
+  if (weaponSelection !== 'auto') return weaponSelection
+  return mode === 'strafetrack' || mode === 'spheretrack' || mode === 'fallingtrack' ? 'ak47' : 'pistol'
+}
+
+function saveCurrentWeaponProfile(): void {
+  if (restoringSettings) return
+  const profile = weaponProfiles[activeWeapon]
+  profile.fireMode = fireModeSetting.value as WeaponProfile['fireMode']
+  profile.bulletSpeed = Number(bulletSpeedSetting.value)
+  profile.recoil = Number(recoilSetting.value)
+  profile.spread = Number(spreadSetting.value)
+  profile.movementSpread = Number(movementSpreadSetting.value)
+  profile.aimingJumpSpread = Number(aimingJumpSpreadSetting.value)
+  profile.hipfireJumpSpread = Number(hipfireJumpSpreadSetting.value)
+  profile.bulletDrop = Number(bulletDropSetting.value)
+  profile.recoilMode = recoilModeSetting.value as RecoilMode
+}
+
+function applyWeaponProfile(weaponId: WeaponId): void {
+  const profile = weaponProfiles[weaponId]
+  fireMode = profile.fireMode
+  fireModeSetting.value = profile.fireMode
+  recoilMode = profile.recoilMode
+  recoilModeSetting.value = profile.recoilMode
+  bulletSpeedSetting.max = '1000'
+  bulletSpeedSetting.value = profile.bulletSpeed.toString()
+  bulletSpeedValue.value = profile.bulletSpeed.toString()
+  recoilSetting.value = profile.recoil.toString()
+  recoilValue.value = `${profile.recoil}%`
+  spreadSetting.value = profile.spread.toString()
+  spreadValue.value = `${profile.spread}%`
+  movementSpreadSetting.value = profile.movementSpread.toString()
+  movementSpreadValue.value = `${profile.movementSpread}%`
+  aimingJumpSpreadSetting.value = profile.aimingJumpSpread.toString()
+  aimingJumpSpreadValue.value = `${profile.aimingJumpSpread}%`
+  hipfireJumpSpreadSetting.value = profile.hipfireJumpSpread.toString()
+  hipfireJumpSpreadValue.value = `${profile.hipfireJumpSpread}%`
+  bulletDropSetting.value = profile.bulletDrop.toString()
+  bulletDropValue.value = `${profile.bulletDrop}%`
+  projectileVelocity = profile.bulletSpeed
+  recoilMultiplier = profile.recoil / 50
+  spreadMultiplier = profile.spread / 50
+  movementSpreadMultiplier = profile.movementSpread / 100
+  aimingJumpSpreadMultiplier = profile.aimingJumpSpread / 100
+  hipfireJumpSpreadMultiplier = profile.hipfireJumpSpread / 100
+  gravityMultiplier = profile.bulletDrop / 100
+  updateBallisticControlState()
+}
+
+function applyWeaponSelection(): void {
+  activeWeapon = resolveWeaponForMode(shootingMode)
+  applyWeaponProfile(activeWeapon)
+  if (activeWeapon !== 'ak47') stopAutomaticFire()
+  if (coltModel) coltModel.visible = activeWeapon === 'pistol'
+  if (ak47Model) ak47Model.visible = activeWeapon === 'ak47'
+  currentWeaponModel = activeWeapon === 'ak47' ? ak47Model : coltModel
+  const muzzlePosition = weaponMuzzlePositions.get(activeWeapon)
+  if (muzzlePosition) modelMuzzle.position.copy(muzzlePosition)
+  currentWeaponName.textContent = activeWeapon === 'ak47' ? 'AK47' : 'COLT 1911'
+  if (aiming) setAiming(true)
+  else weaponRotation.copy(activeWeapon === 'ak47' ? akHipRotation : hipRotation)
+}
 
 function playGunshot(): void {
-  if (!hitSoundEnabled || !gunshotReady || gunshotSound.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return
+  const gunshotSound = gunshotSounds[activeWeapon]
+  if (!hitSoundEnabled || !gunshotReady[activeWeapon] || gunshotSound.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return
   const shotSound = gunshotSound.cloneNode(true) as HTMLAudioElement
   shotSound.volume = soundVolumeMultiplier
   void shotSound.play().catch((error: unknown) => {
@@ -377,7 +539,7 @@ function playGunshot(): void {
 
 gunshotVolumeSetting.addEventListener('input', () => {
   soundVolumeMultiplier = Number(gunshotVolumeSetting.value) / 100
-  gunshotSound.volume = soundVolumeMultiplier
+  Object.values(gunshotSounds).forEach((sound) => { sound.volume = soundVolumeMultiplier })
   gunshotVolumeValue.value = `${gunshotVolumeSetting.value}%`
 })
 
@@ -387,11 +549,11 @@ function getMuzzleWorldPosition(): THREE.Vector3 {
 
 let aiming = false
 let recoilPitch = 0
-let recoilYaw = 0
 let appliedRecoilPitch = 0
-let appliedRecoilYaw = 0
 let weaponRecoilPitch = 0
-let weaponRecoilYaw = 0
+let weaponRecoilVisual = 0
+const recoilLocalAxis = new THREE.Vector3(1, 0, 0)
+const recoilRotation = new THREE.Quaternion()
 const aimingSpread = 0.004
 const hipfireSpread = 0.02
 let movementSpreadMultiplier = 2.25
@@ -419,19 +581,21 @@ function triggerMuzzleFlash(): void {
 }
 
 function applyRecoil(): void {
-  const strength = (aiming ? 0.018 : 0.035) * recoilMultiplier
+  const strength = (aiming ? 0.06 : 0.048) * recoilMultiplier
   recoilPitch += strength
-  recoilYaw += (Math.random() - 0.5) * strength * 0.8
   weaponRecoilPitch += strength * 0.9
-  weaponRecoilYaw += (Math.random() - 0.5) * strength * 0.55
   triggerMuzzleFlash()
 }
 
 function setAiming(nextAiming: boolean): void {
   aiming = nextAiming
   updatePointerSensitivity()
-  const position = aiming ? adsPosition : hipPosition
-  const rotation = aiming ? adsRotation : hipRotation
+  const position = aiming
+    ? activeWeapon === 'ak47' ? akAdsPosition : adsPosition
+    : hipPosition
+  const rotation = aiming
+    ? activeWeapon === 'ak47' ? akAdsRotation : adsRotation
+    : activeWeapon === 'ak47' ? akHipRotation : hipRotation
   gsap.to(weaponPosition, { x: position.x, y: position.y, z: position.z, duration: 0.18, ease: 'power2.out' })
   gsap.to(weaponRotation, { x: rotation.x, y: rotation.y, z: rotation.z, duration: 0.18, ease: 'power2.out' })
   gsap.to(camera, { fov: aiming ? adsFov : baseFov, duration: 0.2, ease: 'power2.out', onUpdate: () => camera.updateProjectionMatrix() })
@@ -446,7 +610,8 @@ function handlePointerDown(event: PointerEvent): void {
   if (event.button === 2 && controls.isLocked) setAiming(true)
   if (event.button === 0 && controls.isLocked && !aiming) {
     event.preventDefault()
-    fireShot()
+    if (activeWeapon === 'ak47') startAutomaticFire()
+    else fireShot()
   }
 }
 
@@ -458,21 +623,50 @@ function releaseAim(): void {
   if (aiming) setAiming(false)
 }
 
+const akFireInterval = 60000 / 600
+let automaticFireTimer: number | null = null
+
+function startAutomaticFire(): void {
+  if (activeWeapon !== 'ak47' || automaticFireTimer !== null) return
+  fireShot()
+  automaticFireTimer = window.setInterval(fireShot, akFireInterval)
+}
+
+function stopAutomaticFire(): void {
+  if (automaticFireTimer === null) return
+  window.clearInterval(automaticFireTimer)
+  automaticFireTimer = null
+}
+
 canvas.addEventListener('pointerdown', handlePointerDown)
 canvas.addEventListener('mousedown', (event) => {
   if (event.button === 0 && controls.isLocked && aiming) {
     event.preventDefault()
-    fireShot()
+    if (activeWeapon === 'ak47') startAutomaticFire()
+    else fireShot()
   }
 })
-document.addEventListener('pointerup', handlePointerUp)
-document.addEventListener('pointercancel', releaseAim)
+document.addEventListener('pointerup', (event) => {
+  handlePointerUp(event)
+  if (event.button === 0) stopAutomaticFire()
+})
+document.addEventListener('pointercancel', () => {
+  stopAutomaticFire()
+  releaseAim()
+})
 window.addEventListener('mouseup', (event) => {
   if (event.button === 2) releaseAim()
+  if (event.button === 0) stopAutomaticFire()
 })
-window.addEventListener('blur', releaseAim)
+window.addEventListener('blur', () => {
+  stopAutomaticFire()
+  releaseAim()
+})
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) releaseAim()
+  if (document.hidden) {
+    stopAutomaticFire()
+    releaseAim()
+  }
 })
 canvas.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -514,31 +708,67 @@ maxFpsSetting.addEventListener('change', () => {
 })
 fireModeSetting.addEventListener('change', () => {
   fireMode = fireModeSetting.value as 'projectile' | 'hitscan'
+  saveCurrentWeaponProfile()
   updateBallisticControlState()
+})
+recoilModeSetting.addEventListener('change', () => {
+  recoilMode = recoilModeSetting.value as RecoilMode
+  saveCurrentWeaponProfile()
+})
+weaponSetting.addEventListener('change', () => {
+  weaponSelection = weaponSetting.value as 'auto' | WeaponId
+  applyWeaponSelection()
 })
 recoilSetting.addEventListener('input', () => {
   recoilMultiplier = Number(recoilSetting.value) / 50
   recoilValue.value = `${recoilSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].recoil = Number(recoilSetting.value)
 })
 spreadSetting.addEventListener('input', () => {
   spreadMultiplier = Number(spreadSetting.value) / 50
   spreadValue.value = `${spreadSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].spread = Number(spreadSetting.value)
 })
 movementSpreadSetting.addEventListener('input', () => {
   movementSpreadMultiplier = Number(movementSpreadSetting.value) / 100
   movementSpreadValue.value = `${movementSpreadSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].movementSpread = Number(movementSpreadSetting.value)
 })
 aimingJumpSpreadSetting.addEventListener('input', () => {
   aimingJumpSpreadMultiplier = Number(aimingJumpSpreadSetting.value) / 100
   aimingJumpSpreadValue.value = `${aimingJumpSpreadSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].aimingJumpSpread = Number(aimingJumpSpreadSetting.value)
 })
 hipfireJumpSpreadSetting.addEventListener('input', () => {
   hipfireJumpSpreadMultiplier = Number(hipfireJumpSpreadSetting.value) / 100
   hipfireJumpSpreadValue.value = `${hipfireJumpSpreadSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].hipfireJumpSpread = Number(hipfireJumpSpreadSetting.value)
 })
 bulletDropSetting.addEventListener('input', () => {
   gravityMultiplier = Number(bulletDropSetting.value) / 100
   bulletDropValue.value = `${bulletDropSetting.value}%`
+  if (!restoringSettings) weaponProfiles[activeWeapon].bulletDrop = Number(bulletDropSetting.value)
+})
+trackingSpeedSetting.addEventListener('input', () => {
+  trackingSpeed = Number(trackingSpeedSetting.value)
+  trackingSpeedValue.value = trackingSpeed.toFixed(1)
+  if (shootingMode === 'strafetrack') trackingVelocity.x = strafetrackDirection * trackingSpeed
+})
+fallingHorizontalForceSetting.addEventListener('input', () => {
+  fallingHorizontalForce = Number(fallingHorizontalForceSetting.value)
+  fallingHorizontalForceValue.value = fallingHorizontalForce.toFixed(1)
+})
+fallingLaunchSetting.addEventListener('input', () => {
+  fallingLaunchSpeed = Number(fallingLaunchSetting.value)
+  fallingLaunchValue.value = fallingLaunchSpeed.toFixed(1)
+})
+fallingGravitySetting.addEventListener('input', () => {
+  fallingGravity = Number(fallingGravitySetting.value)
+  fallingGravityValue.value = fallingGravity.toFixed(1)
+})
+fallingRespawnDelaySetting.addEventListener('input', () => {
+  fallingRespawnDelay = Number(fallingRespawnDelaySetting.value)
+  fallingRespawnDelayValue.value = `${fallingRespawnDelay.toFixed(2)}s`
 })
 targetSizeSetting.addEventListener('input', () => {
   targetSizeMultiplier = Number(targetSizeSetting.value) / 100
@@ -759,10 +989,11 @@ let renderer = new THREE.WebGLRenderer({ canvas, antialias: antialiasingSetting.
 renderer.setPixelRatio(getRenderPixelRatio())
 renderer.shadowMap.enabled = false
 
-let projectileVelocity = 253
+let projectileVelocity = 710
 bulletSpeedSetting.addEventListener('input', () => {
   projectileVelocity = Number(bulletSpeedSetting.value)
   bulletSpeedValue.value = bulletSpeedSetting.value
+  if (!restoringSettings) weaponProfiles[activeWeapon].bulletSpeed = projectileVelocity
 })
 
 const weaponPreviewScene = new THREE.Scene()
@@ -778,6 +1009,7 @@ const weaponPreviewGroup = new THREE.Group()
 weaponPreviewScene.add(weaponPreviewGroup)
 const weaponPreviewRenderer = new THREE.WebGLRenderer({ canvas: weaponPreviewCanvas, antialias: true, alpha: false })
 weaponPreviewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+let previewSourceModel: THREE.Object3D | null = null
 let weaponPreviewDragging = false
 let weaponPreviewLastX = 0
 weaponPreviewCanvas.addEventListener('pointerdown', (event) => {
@@ -806,7 +1038,18 @@ weaponPreviewRenderer.setAnimationLoop(() => {
     weaponPreviewRenderer.setSize(width, height, false)
     weaponPreviewCamera.aspect = width / height
     weaponPreviewCamera.updateProjectionMatrix()
-    if (currentWeaponModel && weaponPreviewGroup.children.length === 0) weaponPreviewGroup.add(currentWeaponModel.clone(true))
+    if (currentWeaponModel !== previewSourceModel) {
+      weaponPreviewGroup.clear()
+      previewSourceModel = currentWeaponModel
+      if (previewSourceModel) {
+        const previewModel = previewSourceModel.clone(true)
+        previewModel.visible = true
+        previewModel.updateMatrixWorld(true)
+        const centeredBounds = new THREE.Box3().setFromObject(previewModel)
+        previewModel.position.sub(centeredBounds.getCenter(new THREE.Vector3()))
+        weaponPreviewGroup.add(previewModel)
+      }
+    }
     if (!weaponPreviewDragging) weaponPreviewGroup.rotation.y += 0.008
     weaponPreviewRenderer.render(weaponPreviewScene, weaponPreviewCamera)
   }
@@ -852,6 +1095,13 @@ const targetPath = new THREE.CatmullRomCurve3([], true, 'catmullrom', 0.5)
 let targetPathSeed = 0
 let targetPathStartedAt = 0
 let targetPathSpeed = 0.11
+const trackingCenter = new THREE.Vector3()
+const trackingVelocity = new THREE.Vector3()
+const fallingVelocity = new THREE.Vector3()
+let strafetrackDirection = 1
+let strafetrackSwitchAt = 0
+let fallingRespawnAt = 0
+const trackingBounds = { x: 4.2, y: 0, z: 0 }
 const microshotPositions = [
   new THREE.Vector3(-3, 2.2, -8), new THREE.Vector3(0, 3.4, -9), new THREE.Vector3(3, 2.4, -8),
   new THREE.Vector3(-2.5, 1.2, -10), new THREE.Vector3(2.4, 1.4, -10),
@@ -972,8 +1222,68 @@ function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
   ]
 }
 
+function resetTrackingTarget(mode: ShootingMode): void {
+  camera.getWorldDirection(targetSpawnForward)
+  camera.getWorldPosition(trackingCenter)
+  trackingCenter.addScaledVector(targetSpawnForward, mode === 'fallingtrack' ? 15 : 18)
+  trackingCenter.y = mode === 'fallingtrack' ? 5.8 : targetRadius + 0.15
+  if (mode === 'fallingtrack') {
+    target.visible = true
+    target.position.set(
+      trackingCenter.x + (Math.random() - 0.5) * 2.2,
+      trackingCenter.y + Math.random() * 1.8,
+      trackingCenter.z + (Math.random() - 0.5) * 2.2,
+    )
+    fallingVelocity.set((Math.random() - 0.5) * fallingHorizontalForce, fallingLaunchSpeed, (Math.random() - 0.5) * fallingHorizontalForce)
+    return
+  }
+  target.position.copy(trackingCenter)
+  strafetrackDirection = Math.random() > 0.5 ? 1 : -1
+  strafetrackSwitchAt = clock.getElapsedTime() + 0.35 + Math.random() * 1.4
+  trackingVelocity.set(strafetrackDirection * trackingSpeed, 0, 0)
+}
+
+function updateTrackingTarget(delta: number, elapsed: number): void {
+  if (shootingMode === 'strafetrack') {
+    if (elapsed >= strafetrackSwitchAt) {
+      strafetrackDirection *= -1
+      strafetrackSwitchAt = elapsed + 0.35 + Math.random() * 1.4
+      trackingVelocity.x = strafetrackDirection * trackingSpeed
+    }
+    target.position.x += trackingVelocity.x * delta
+    if (Math.abs(target.position.x - trackingCenter.x) > trackingBounds.x) trackingVelocity.x *= -1
+    target.position.y = trackingCenter.y
+    target.position.z = trackingCenter.z
+    target.lookAt(camera.position)
+    return
+  }
+  if (shootingMode === 'spheretrack') {
+    const orbitTime = elapsed * 1.35
+    target.position.set(
+      trackingCenter.x + Math.sin(orbitTime * 1.17) * 3.2 + Math.sin(orbitTime * 2.3) * 0.8,
+      trackingCenter.y + Math.sin(orbitTime * 0.83) * 1.8 + Math.cos(orbitTime * 1.9) * 0.65,
+      trackingCenter.z + Math.cos(orbitTime * 1.07) * 2.4 + Math.sin(orbitTime * 1.73) * 0.7,
+    )
+    target.lookAt(camera.position)
+    return
+  }
+  if (shootingMode === 'fallingtrack') {
+    if (!target.visible) {
+      if (elapsed >= fallingRespawnAt) resetTrackingTarget('fallingtrack')
+      return
+    }
+    fallingVelocity.y -= fallingGravity * delta
+    target.position.addScaledVector(fallingVelocity, delta)
+    if (target.position.y <= -targetRadius) {
+      target.visible = false
+      fallingRespawnAt = elapsed + fallingRespawnDelay
+    }
+  }
+}
+
 function setShootingMode(nextMode: ShootingMode): void {
   shootingMode = nextMode
+  applyWeaponSelection()
   clearReflexTimers()
   modeButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.mode === nextMode))
   gridTargets.forEach((gridTarget) => {
@@ -987,6 +1297,10 @@ function setShootingMode(nextMode: ShootingMode): void {
   }
   if (nextMode === 'reflexshot') {
     scheduleReflexTarget(getRandomVisibleTargetPosition(16, 12, 0.58))
+    return
+  }
+  if (nextMode === 'strafetrack' || nextMode === 'spheretrack' || nextMode === 'fallingtrack') {
+    resetTrackingTarget(nextMode)
     return
   }
   const nextCenter = nextMode === 'microshot'
@@ -1016,7 +1330,7 @@ modeCategoryButtons.forEach((button) => {
 rebuildTargetPath(target.position)
 
 function updateTargetMovement(elapsed: number): void {
-  if (shootingMode === 'gridshot' || shootingMode === 'reflexshot') return
+  if (shootingMode === 'gridshot' || shootingMode === 'reflexshot' || shootingMode === 'strafetrack' || shootingMode === 'spheretrack' || shootingMode === 'fallingtrack') return
   const pathTime = ((elapsed - targetPathStartedAt) * targetPathSpeed) % 1
   targetPath.getPointAt(pathTime, targetPathSample)
   const noiseTime = elapsed * 1.7 + targetPathSeed
@@ -1041,9 +1355,10 @@ const projectileLifetime = 3
 
 function spawnProjectile(direction: THREE.Vector3): void {
   shotOrigin.copy(getMuzzleWorldPosition())
+  const muzzleVelocity = activeWeapon === 'ak47' ? 710 : projectileVelocity
   const bodyDescription = RAPIER.RigidBodyDesc.dynamic()
     .setTranslation(shotOrigin.x, shotOrigin.y, shotOrigin.z)
-    .setLinvel(direction.x * projectileVelocity, direction.y * projectileVelocity, direction.z * projectileVelocity)
+    .setLinvel(direction.x * muzzleVelocity, direction.y * muzzleVelocity, direction.z * muzzleVelocity)
     .setCcdEnabled(true)
   const body = physicsWorld.createRigidBody(bodyDescription)
   body.setGravityScale(gravityMultiplier, true)
@@ -1125,6 +1440,10 @@ function registerTargetHit(hitTarget: typeof target): void {
   if (hitVfxEnabled) {
     gsap.killTweensOf(hitMarker)
     gsap.fromTo(hitMarker, { opacity: 1, scale: 0.82 }, { opacity: 0, scale: 1, duration: hitMarkerDuration, ease: 'power2.out' })
+  }
+  if (shootingMode === 'strafetrack' || shootingMode === 'spheretrack' || shootingMode === 'fallingtrack') {
+    updateAimStats()
+    return
   }
   if (shootingMode === 'gridshot') {
     moveGridTargetToRandomCell(hitTarget)
@@ -1250,6 +1569,7 @@ function render(): void {
   if (shootingMode === 'gridshot') updateGridLayout()
   if (shootingMode === 'reflexshot') updateReflexTarget(elapsed)
   if (target.visible) updateTargetMovement(elapsed)
+  if (shootingMode === 'strafetrack' || shootingMode === 'spheretrack' || shootingMode === 'fallingtrack') updateTrackingTarget(delta, elapsed)
   updateProjectiles(performance.now() / 1000, delta)
 
   movement.set(0, 0, 0)
@@ -1282,30 +1602,27 @@ function render(): void {
   crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   weaponSwayFactor += ((isMoving ? 1 : 0) - weaponSwayFactor) * Math.min(1, delta * 10)
   const swayAmount = weaponSwayFactor * (aiming ? 0.003 : 0.008)
-  const weaponKick = weaponRecoilPitch * 0.8
+  const recoilEase = 1 - Math.exp(-38 * delta)
+  const recoilPitchStep = (recoilPitch - appliedRecoilPitch) * recoilEase
+  if (Math.abs(recoilPitchStep) > 0.000001) {
+    recoilRotation.setFromAxisAngle(recoilLocalAxis, recoilPitchStep)
+    camera.quaternion.multiply(recoilRotation).normalize()
+    appliedRecoilPitch += recoilPitchStep
+  }
+  weaponRecoilVisual += (weaponRecoilPitch - weaponRecoilVisual) * (1 - Math.exp(-42 * delta))
+  const weaponKick = weaponRecoilVisual * 0.8
   weapon.position.set(
     weaponPosition.x + Math.sin(elapsed * 4.5) * swayAmount,
     weaponPosition.y + Math.cos(elapsed * 2.25) * swayAmount * 0.65,
     weaponPosition.z + weaponKick * 0.45,
   )
   weapon.rotation.set(
-    weaponRotation.x + weaponRecoilPitch * 0.8,
-    weaponRotation.y + weaponRecoilYaw,
-    weaponRotation.z + Math.sin(elapsed * 2.8) * swayAmount * 0.45,
+    weaponRotation.x - weaponRecoilPitch * 0.8,
+    weaponRotation.y,
+    weaponRotation.z,
   )
-  weaponRecoilPitch *= Math.exp(-18 * delta)
-  weaponRecoilYaw *= Math.exp(-20 * delta)
-
-  const recoilPitchDelta = recoilPitch - appliedRecoilPitch
-  const recoilYawDelta = recoilYaw - appliedRecoilYaw
-  if (Math.abs(recoilPitchDelta) > 0.00001 || Math.abs(recoilYawDelta) > 0.00001) {
-    camera.rotation.x -= recoilPitchDelta
-    camera.rotation.y += recoilYawDelta
-    appliedRecoilPitch = recoilPitch
-    appliedRecoilYaw = recoilYaw
-    recoilPitch *= Math.exp(-12 * delta)
-    recoilYaw *= Math.exp(-14 * delta)
-  }
+  if (recoilMode === 'recover') recoilPitch *= Math.exp(-9 * delta)
+  weaponRecoilPitch *= Math.exp(-16 * delta)
 
   renderer.render(scene, camera)
 }
@@ -1317,4 +1634,5 @@ antialiasingSetting.addEventListener('change', () => {
 })
 
 restoreSettings()
+applyWeaponSelection()
 renderer.setAnimationLoop(render)

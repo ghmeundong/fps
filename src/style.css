@@ -79,6 +79,11 @@ button { font: inherit; }
 .settings-button:hover { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
 .settings-overlay { position: absolute; z-index: 8; inset: 0; overflow: auto; visibility: hidden; opacity: 0; background: rgba(5, 8, 10, .34); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .18s ease, visibility .18s ease; }
 .settings-overlay.is-open { visibility: visible; opacity: 1; }
+.settings-overlay { scrollbar-color: #53616b rgba(17, 23, 29, .72); scrollbar-width: thin; }
+.settings-overlay::-webkit-scrollbar { width: 8px; height: 8px; }
+.settings-overlay::-webkit-scrollbar-track { background: rgba(17, 23, 29, .72); }
+.settings-overlay::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 0; background: #53616b; background-clip: padding-box; }
+.settings-overlay::-webkit-scrollbar-thumb:hover { background: #82909a; background-clip: padding-box; }
 .menu-view { display: none; position: absolute; inset: 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 34px 76px 42px; color: #f1f4f5; }
 .menu-view.is-visible { display: flex; }
 .menu-kicker { margin-bottom: 8px; color: #ed654e; font-size: 9px; letter-spacing: 2px; }
