@@ -284,6 +284,8 @@ type Projectile = {
 const projectiles: Projectile[] = []
 const projectileMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a3', fog: false })
 const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
+const targetRadius = 0.72
+const projectileRadius = 0.035
 const projectileVelocity = 150
 const projectileLifetime = 3
 
@@ -294,7 +296,7 @@ function spawnProjectile(direction: THREE.Vector3): void {
     .setLinvel(direction.x * projectileVelocity, direction.y * projectileVelocity, direction.z * projectileVelocity)
     .setCcdEnabled(true)
   const body = physicsWorld.createRigidBody(bodyDescription)
-  physicsWorld.createCollider(RAPIER.ColliderDesc.ball(0.035).setDensity(1), body)
+  physicsWorld.createCollider(RAPIER.ColliderDesc.ball(projectileRadius).setDensity(1), body)
   const mesh = new THREE.Mesh(projectileGeometry, projectileMaterial)
   mesh.position.copy(shotOrigin)
   scene.add(mesh)
@@ -314,7 +316,8 @@ function updateProjectiles(now: number): void {
       projectile.lastTrailAt = now
     }
     const projectilePosition = projectile.mesh.position
-    const hitTarget = target.visible && projectilePosition.distanceToSquared(target.position) < 0.64
+    const hitRadius = targetRadius + projectileRadius
+    const hitTarget = target.visible && projectilePosition.distanceToSquared(target.position) <= hitRadius * hitRadius
     if (hitTarget) {
       registerTargetHit()
     }
