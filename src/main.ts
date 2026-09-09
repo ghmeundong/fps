@@ -195,6 +195,7 @@ type Projectile = {
   body: RAPIER.RigidBody
   mesh: THREE.Mesh
   bornAt: number
+  lastTrailAt: number
 }
 
 const projectiles: Projectile[] = []
@@ -214,7 +215,9 @@ function spawnProjectile(direction: THREE.Vector3): void {
   const mesh = new THREE.Mesh(projectileGeometry, projectileMaterial)
   mesh.position.copy(shotOrigin)
   scene.add(mesh)
-  projectiles.push({ body, mesh, bornAt: performance.now() / 1000 })
+  const now = performance.now() / 1000
+  projectiles.push({ body, mesh, bornAt: now, lastTrailAt: now })
+  createTracer(mesh.position)
 }
 
 function updateProjectiles(now: number): void {
@@ -223,6 +226,10 @@ function updateProjectiles(now: number): void {
     const projectile = projectiles[index]
     const translation = projectile.body.translation()
     projectile.mesh.position.set(translation.x, translation.y, translation.z)
+    if (now - projectile.lastTrailAt > 0.045) {
+      createTracer(projectile.mesh.position)
+      projectile.lastTrailAt = now
+    }
     const projectilePosition = projectile.mesh.position
     const hitTarget = target.visible && projectilePosition.distanceToSquared(target.position) < 0.64
     if (hitTarget) {
@@ -264,44 +271,22 @@ function registerTargetHit(): void {
   updateAimStats()
 }
 
-function createTracer(end: THREE.Vector3): void {
-  weaponBarrel.getWorldPosition(shotOrigin)
-  const tracerDirection = end.clone().sub(shotOrigin)
-  const smokeGroup = new THREE.Group()
-  const smokePuffs: THREE.Mesh[] = []
-  const smokeSide = new THREE.Vector3().crossVectors(tracerDirection, camera.up).normalize()
-  const smokeUp = new THREE.Vector3().crossVectors(smokeSide, tracerDirection).normalize()
-  const normalizedDirection = tracerDirection.clone().normalize()
-
-  for (let puffIndex = 0; puffIndex < 10; puffIndex += 1) {
-    const progress = puffIndex / 10
-    const puffPosition = shotOrigin.clone().addScaledVector(tracerDirection, progress)
-    puffPosition.addScaledVector(smokeSide, (Math.random() - 0.5) * 0.11)
-    puffPosition.addScaledVector(smokeUp, (Math.random() - 0.5) * 0.11)
-    const puffMaterial = new THREE.MeshBasicMaterial({ color: '#aeb4b5', transparent: true, opacity: 0.22, depthTest: false, depthWrite: false, fog: false })
-    const puff = new THREE.Mesh(new THREE.SphereGeometry(0.035 + Math.random() * 0.045, 8, 6), puffMaterial)
-    puff.position.copy(puffPosition)
-    puff.renderOrder = 10
-    smokeGroup.add(puff)
-    smokePuffs.push(puff)
-
-    const drift = smokeSide.clone().multiplyScalar((Math.random() - 0.5) * 0.35)
-    drift.addScaledVector(smokeUp, 0.18 + Math.random() * 0.24)
-    drift.addScaledVector(normalizedDirection, 0.12 + Math.random() * 0.2)
-    gsap.to(puff.position, { x: puffPosition.x + drift.x, y: puffPosition.y + drift.y, z: puffPosition.z + drift.z, duration: 0.5, delay: puffIndex * 0.015, ease: 'sine.out' })
-    gsap.to(puff.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.5, delay: puffIndex * 0.015, ease: 'sine.out' })
-    gsap.to(puffMaterial, { opacity: 0, duration: 0.5, delay: puffIndex * 0.015 })
-  }
-
-  scene.add(smokeGroup)
-  gsap.delayedCall(0.75, () => {
-    scene.remove(smokeGroup)
-    smokePuffs.forEach((puff) => {
-      puff.geometry.dispose()
-      const puffMaterial = puff.material as THREE.MeshBasicMaterial
-      puffMaterial.dispose()
-    })
-  })
+function createTracer(position: THREE.Vector3): void {
+  const smokePuff = new THREE.Mesh(
+    new THREE.SphereGeometry(0.035 + Math.random() * 0.045, 8, 6),
+    new THREE.MeshBasicMaterial({ color: '#aeb4b5', transparent: true, opacity: 0.24, depthTest: false, depthWrite: false, fog: false }),
+  )
+  const smokeMaterial = smokePuff.material as THREE.MeshBasicMaterial
+  smokePuff.position.copy(position)
+  smokePuff.renderOrder = 10
+  scene.add(smokePuff)
+  gsap.to(smokePuff.position, { x: position.x + (Math.random() - 0.5) * 0.14, y: position.y + 0.12 + Math.random() * 0.18, z: position.z + (Math.random() - 0.5) * 0.14, duration: 0.45, ease: 'sine.out' })
+  gsap.to(smokePuff.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 0.45, ease: 'sine.out' })
+  gsap.to(smokeMaterial, { opacity: 0, duration: 0.45, onComplete: () => {
+    scene.remove(smokePuff)
+    smokePuff.geometry.dispose()
+    smokeMaterial.dispose()
+  } })
 }
 
 function fireShot(): void {
@@ -313,9 +298,6 @@ function fireShot(): void {
   shotDirection.x += (Math.random() - 0.5) * shotSpread
   shotDirection.y += (Math.random() - 0.5) * shotSpread
   shotDirection.normalize()
-  const tracerEnd = shotOrigin.clone().addScaledVector(shotDirection, 45)
-  createTracer(tracerEnd)
-
   spawnProjectile(shotDirection)
   updateAimStats()
 }
