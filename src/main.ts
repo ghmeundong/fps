@@ -196,7 +196,7 @@ controls.addEventListener('lock', handleLockChange)
 controls.addEventListener('unlock', handleLockChange)
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' })
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
 renderer.shadowMap.enabled = false
 
 scene.add(new THREE.HemisphereLight('#d9e6ff', '#10151c', 2.4))
