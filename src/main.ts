@@ -158,6 +158,8 @@ sensitivityInput.addEventListener('input', () => {
 const keys = new Set<string>()
 const movement = new THREE.Vector3()
 const direction = new THREE.Vector3()
+const cameraBob = new THREE.Vector3()
+const appliedCameraBob = new THREE.Vector3()
 const playerHeight = 1.6
 const gravity = 18
 const jumpVelocity = 7
@@ -392,12 +394,20 @@ function render(): void {
   }
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
+  const bobStrength = aiming ? 0.018 : 0.032
+  const targetBobX = isMoving ? Math.sin(elapsed * 6.5) * bobStrength : 0
+  const targetBobY = isMoving ? Math.abs(Math.cos(elapsed * 13)) * bobStrength * 0.7 : 0
+  cameraBob.set(targetBobX, targetBobY, 0)
+  const cameraBobDelta = cameraBob.clone().sub(appliedCameraBob)
+  camera.position.x += cameraBobDelta.x
+  camera.position.y += cameraBobDelta.y
+  appliedCameraBob.copy(cameraBob)
   const crosshairGap = aiming ? 6 : isMoving ? 24 : 14
   crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   const swayAmount = isMoving ? (aiming ? 0.008 : 0.018) : 0
   weapon.position.set(
     weaponPosition.x + Math.sin(elapsed * 6.5) * swayAmount,
-    weaponPosition.y + Math.cos(elapsed * 3.25) * swayAmount * 0.65,
+    weaponPosition.y + Math.abs(Math.cos(elapsed * 13)) * swayAmount * 0.7,
     weaponPosition.z,
   )
   weapon.rotation.set(weaponRotation.x, weaponRotation.y, weaponRotation.z + Math.sin(elapsed * 4) * swayAmount)
