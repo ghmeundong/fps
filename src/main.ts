@@ -98,7 +98,10 @@ function setAiming(nextAiming: boolean): void {
 
 function handlePointerDown(event: PointerEvent): void {
   if (event.button === 2 && controls.isLocked) setAiming(true)
-  if (event.button === 0 && controls.isLocked) fireShot()
+  if (event.button === 0 && controls.isLocked && !aiming) {
+    event.preventDefault()
+    fireShot()
+  }
 }
 
 function handlePointerUp(event: PointerEvent): void {
@@ -106,6 +109,12 @@ function handlePointerUp(event: PointerEvent): void {
 }
 
 canvas.addEventListener('pointerdown', handlePointerDown)
+canvas.addEventListener('mousedown', (event) => {
+  if (event.button === 0 && controls.isLocked && aiming) {
+    event.preventDefault()
+    fireShot()
+  }
+})
 document.addEventListener('pointerup', handlePointerUp)
 canvas.addEventListener('contextmenu', (event) => event.preventDefault())
 
