@@ -20,13 +20,16 @@ app.innerHTML = `
       <canvas id="range-canvas" aria-label="FPS training range"></canvas>
       <div class="crosshair" aria-hidden="true"><span></span><i></i><b></b><em></em></div>
       <div class="hit-marker" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-      <div class="range-label">TRAINING RANGE <span>01</span></div>
       <div class="hud hud-left"><span class="hud-caption">ACCURACY</span><strong id="accuracy-value">--.-%</strong></div>
       <div class="hud hud-right"><span class="hud-caption">SCORE</span><strong id="score-value">000000</strong></div>
       <label class="sensitivity-control">SENS <output id="sensitivity-value">0.70</output><input id="sensitivity" type="range" min="0.2" max="1.5" step="0.05" value="0.7" aria-label="Mouse sensitivity"></label>
+      <button class="settings-button" type="button" aria-label="Open settings" title="Open settings">⚙</button>
       <button class="fullscreen-button" type="button" aria-label="Enter fullscreen" title="Enter fullscreen">⛶</button>
+      <div class="settings-overlay" aria-hidden="true">
+        <button class="settings-close" type="button" aria-label="Close settings" title="Close settings">×</button>
+      </div>
     </section>
-    <footer class="bottombar"><div class="mode-category"><span class="category-label">${activeModeCategory.toUpperCase()}</span><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button></div></div></footer>
+    <footer class="bottombar"><div class="mode-category"><span class="category-label">${activeModeCategory.toUpperCase()}</span><div class="mode-select" role="group" aria-label="Flicking modes"><button class="mode-button is-active" data-mode="flickshot" type="button">FLICKSHOT</button><button class="mode-button" data-mode="microshot" type="button">MICROSHOT</button><button class="mode-button" data-mode="gridshot" type="button">GRIDSHOT</button><button class="mode-button" data-mode="reflexshot" type="button">REFLEXSHOT</button></div></div></footer>
   </main>
 `
 
@@ -34,13 +37,16 @@ const canvas = document.querySelector<HTMLCanvasElement>('#range-canvas')!
 const crosshair = document.querySelector<HTMLElement>('.crosshair')!
 const hitMarker = document.querySelector<HTMLElement>('.hit-marker')!
 const range = document.querySelector<HTMLElement>('.range')!
+const settingsButton = document.querySelector<HTMLButtonElement>('.settings-button')!
+const settingsOverlay = document.querySelector<HTMLElement>('.settings-overlay')!
+const settingsClose = document.querySelector<HTMLButtonElement>('.settings-close')!
 const fullscreenButton = document.querySelector<HTMLButtonElement>('.fullscreen-button')!
 const sensitivityInput = document.querySelector<HTMLInputElement>('#sensitivity')!
 const sensitivityValue = document.querySelector<HTMLOutputElement>('#sensitivity-value')!
 const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
 const scoreValue = document.querySelector<HTMLElement>('#score-value')!
 const modeButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-button')]
-type ShootingMode = 'microshot' | 'flickshot' | 'gridshot'
+type ShootingMode = 'microshot' | 'flickshot' | 'gridshot' | 'reflexshot'
 let shootingMode: ShootingMode = 'flickshot'
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#0b0e12')
@@ -124,7 +130,7 @@ pistolLoader.load(pistolModelUrl, (pistol) => {
     Math.min(modelBounds.min.z, modelBounds.max.z) - 0.02,
   )
   muzzleFlash.position.copy(modelMuzzle.position)
-  muzzleFlash.position.y += 0.20
+  muzzleFlash.position.y += 0.22
   muzzleFlash.position.z -= 0.08
   pistol.visible = activeWeaponModel === 'silenced'
   weapon.add(pistol)
@@ -166,7 +172,7 @@ coltLoader.load(coltModelUrl, (colt) => {
     Math.min(centeredBounds.min.z, centeredBounds.max.z) - 0.02,
   )
   muzzleFlash.position.copy(modelMuzzle.position)
-  muzzleFlash.position.y += 0.20
+  muzzleFlash.position.y += 0.22
   muzzleFlash.position.z -= 0.08
   colt.visible = activeWeaponModel === 'colt1911'
   weapon.add(colt)
@@ -190,6 +196,17 @@ let appliedRecoilPitch = 0
 let appliedRecoilYaw = 0
 let weaponRecoilPitch = 0
 let weaponRecoilYaw = 0
+const aimingSpread = 0.004
+const hipfireSpread = 0.02
+const movementSpreadMultiplier = 2.25
+const aimingJumpSpreadMultiplier = 5.5
+const hipfireJumpSpreadMultiplier = 4.5
+const aimingCrosshairGap = 6
+const hipfireCrosshairGap = 14
+const aimingMovingGapMultiplier = 1.5
+const hipfireMovingGapMultiplier = 1.7
+const aimingJumpGapMultiplier = 2.6
+const hipfireJumpGapMultiplier = 2.3
 
 function triggerMuzzleFlash(): void {
   muzzleFlash.scale.set(0.7 + Math.random() * 0.3, 0.8 + Math.random() * 0.35, 0.7 + Math.random() * 0.3)
@@ -302,6 +319,17 @@ function handleLockChange(): void {
 }
 
 canvas.addEventListener('click', lockPointer)
+settingsButton.addEventListener('click', () => {
+  settingsOverlay.classList.add('is-open')
+  settingsOverlay.setAttribute('aria-hidden', 'false')
+})
+settingsClose.addEventListener('click', () => {
+  settingsOverlay.classList.remove('is-open')
+  settingsOverlay.setAttribute('aria-hidden', 'true')
+})
+settingsOverlay.addEventListener('click', (event) => {
+  if (event.target === settingsOverlay) settingsClose.click()
+})
 fullscreenButton.addEventListener('click', () => { void toggleFullscreen() })
 document.addEventListener('fullscreenchange', updateFullscreenButton)
 document.addEventListener('keydown', handleKeyDown)
@@ -365,6 +393,10 @@ const gridCenter = new THREE.Vector3()
 const gridLocalPosition = new THREE.Vector3()
 const gridCellIndices = [0, 1, 2]
 const gridCells = Array.from({ length: 9 }, (_, index) => index)
+let reflexRespawnCall: gsap.core.Tween | null = null
+let reflexHideCall: gsap.core.Tween | null = null
+let reflexRespawnAt = 0
+let reflexHideAt = 0
 scene.add(gridAnchor)
 
 function updateGridLayout(): void {
@@ -406,20 +438,20 @@ function snapshotTargetPositions(): void {
   })
 }
 
-function getRandomVisibleTargetPosition(): THREE.Vector3 {
+function getRandomVisibleTargetPosition(distanceMin = 14, distanceRange = 22, spread = 1): THREE.Vector3 {
   camera.updateMatrixWorld()
   camera.getWorldPosition(targetSpawnPosition)
   camera.getWorldDirection(targetSpawnForward)
   targetSpawnRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize()
   targetSpawnUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize()
 
-  const distance = 14 + Math.random() * 22
+  const distance = distanceMin + Math.random() * distanceRange
   const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * distance
   const halfWidth = halfHeight * camera.aspect
   const horizontalMargin = Math.min(2.4, halfWidth * 0.65)
   const verticalMargin = Math.min(1.3, halfHeight * 0.65)
-  const horizontalOffset = (Math.random() * 2 - 1) * Math.max(0, halfWidth - horizontalMargin)
-  const verticalOffset = (Math.random() * 2 - 1) * Math.max(0, halfHeight - verticalMargin)
+  const horizontalOffset = (Math.random() * 2 - 1) * Math.max(0, halfWidth - horizontalMargin) * spread
+  const verticalOffset = (Math.random() * 2 - 1) * Math.max(0, halfHeight - verticalMargin) * spread
 
   targetSpawnPosition
     .addScaledVector(targetSpawnForward, distance)
@@ -427,6 +459,32 @@ function getRandomVisibleTargetPosition(): THREE.Vector3 {
     .addScaledVector(targetSpawnUp, verticalOffset)
   targetSpawnPosition.y = THREE.MathUtils.clamp(targetSpawnPosition.y, targetRadius + 0.15 + 0.55, 5.5)
   return targetSpawnPosition.clone()
+}
+
+function clearReflexTimers(): void {
+  reflexRespawnCall?.kill()
+  reflexHideCall?.kill()
+  reflexRespawnCall = null
+  reflexHideCall = null
+}
+
+function scheduleReflexTarget(position: THREE.Vector3): void {
+  clearReflexTimers()
+  target.position.copy(position)
+  target.visible = false
+  reflexRespawnAt = clock.getElapsedTime() + 0.5 + Math.random() * 1.5
+  reflexHideAt = 0
+}
+
+function updateReflexTarget(elapsed: number): void {
+  if (target.visible && elapsed >= reflexHideAt) {
+    scheduleReflexTarget(getRandomVisibleTargetPosition(16, 12, 0.58))
+    return
+  }
+  if (!target.visible && elapsed >= reflexRespawnAt) {
+    target.visible = true
+    reflexHideAt = elapsed + 0.5
+  }
 }
 
 function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
@@ -444,6 +502,7 @@ function rebuildTargetPath(center: THREE.Vector3, startTime = 0): void {
 
 function setShootingMode(nextMode: ShootingMode): void {
   shootingMode = nextMode
+  clearReflexTimers()
   modeButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.mode === nextMode))
   gridTargets.forEach((gridTarget) => {
     gsap.killTweensOf(gridTarget)
@@ -452,6 +511,10 @@ function setShootingMode(nextMode: ShootingMode): void {
   target.visible = true
   if (nextMode === 'gridshot') {
     resetGridTargets()
+    return
+  }
+  if (nextMode === 'reflexshot') {
+    scheduleReflexTarget(getRandomVisibleTargetPosition(16, 12, 0.58))
     return
   }
   const nextCenter = nextMode === 'microshot'
@@ -469,7 +532,7 @@ modeButtons.forEach((button) => {
 rebuildTargetPath(target.position)
 
 function updateTargetMovement(elapsed: number): void {
-  if (shootingMode === 'gridshot') return
+  if (shootingMode === 'gridshot' || shootingMode === 'reflexshot') return
   const pathTime = ((elapsed - targetPathStartedAt) * targetPathSpeed) % 1
   targetPath.getPointAt(pathTime, targetPathSample)
   const noiseTime = elapsed * 1.7 + targetPathSeed
@@ -490,7 +553,7 @@ const projectiles: Projectile[] = []
 const projectileMaterial = new THREE.MeshBasicMaterial({ color: '#fff1a3', fog: false })
 const projectileGeometry = new THREE.SphereGeometry(0.035, 8, 8)
 const projectileRadius = 0.035
-const projectileVelocity = 300
+const projectileVelocity = 253
 const projectileLifetime = 3
 
 function spawnProjectile(direction: THREE.Vector3): void {
@@ -569,6 +632,9 @@ function registerTargetHit(hitTarget: typeof target): void {
   gsap.fromTo(hitMarker, { opacity: 1, scale: 0.82 }, { opacity: 0, scale: 1, duration: 0.22, ease: 'power2.out' })
   if (shootingMode === 'gridshot') {
     moveGridTargetToRandomCell(hitTarget)
+  } else if (shootingMode === 'reflexshot') {
+    impactOffset.copy(getRandomVisibleTargetPosition(16, 12, 0.58))
+    scheduleReflexTarget(impactOffset)
   } else if (shootingMode === 'microshot') {
     impactOffset.copy(microshotPositions[Math.floor(Math.random() * microshotPositions.length)])
     rebuildTargetPath(impactOffset, clock.getElapsedTime())
@@ -617,7 +683,11 @@ function fireShot(): void {
   cameraUp.setFromMatrixColumn(camera.matrixWorld, 1)
   aimPoint.copy(cameraOrigin).addScaledVector(shotDirection, projectileAimDistance)
   const movingAtShot = controls.isLocked && (keys.has('KeyW') || keys.has('KeyA') || keys.has('KeyS') || keys.has('KeyD'))
-  const shotSpread = aiming ? movingAtShot ? 0.009 : 0.004 : movingAtShot ? 0.045 : 0.02
+  const airborneAtShot = controls.isLocked && camera.position.y > playerHeight + 0.05
+  const baseSpread = aiming ? aimingSpread : hipfireSpread
+  const movementMultiplier = movingAtShot ? movementSpreadMultiplier : 1
+  const jumpMultiplier = airborneAtShot ? aiming ? aimingJumpSpreadMultiplier : hipfireJumpSpreadMultiplier : 1
+  const shotSpread = baseSpread * movementMultiplier * jumpMultiplier
   const horizontalSpread = (Math.random() - 0.5) * shotSpread * projectileAimDistance
   const verticalSpread = (Math.random() - 0.5) * shotSpread * projectileAimDistance
   aimPoint.addScaledVector(cameraRight, horizontalSpread)
@@ -645,6 +715,7 @@ function render(): void {
   const elapsed = clock.getElapsedTime()
   snapshotTargetPositions()
   if (shootingMode === 'gridshot') updateGridLayout()
+  if (shootingMode === 'reflexshot') updateReflexTarget(elapsed)
   if (target.visible) updateTargetMovement(elapsed)
   updateProjectiles(performance.now() / 1000)
 
@@ -667,7 +738,11 @@ function render(): void {
   }
 
   const isMoving = controls.isLocked && direction.lengthSq() > 0
-  const crosshairGap = aiming ? isMoving ? 9 : 6 : isMoving ? 24 : 14
+  const isAirborne = controls.isLocked && camera.position.y > playerHeight + 0.05
+  const baseCrosshairGap = aiming ? aimingCrosshairGap : hipfireCrosshairGap
+  const movementGapMultiplier = isMoving ? aiming ? aimingMovingGapMultiplier : hipfireMovingGapMultiplier : 1
+  const jumpGapMultiplier = isAirborne ? aiming ? aimingJumpGapMultiplier : hipfireJumpGapMultiplier : 1
+  const crosshairGap = baseCrosshairGap * movementGapMultiplier * jumpGapMultiplier
   crosshair.style.setProperty('--crosshair-gap', `${crosshairGap}px`)
   weaponSwayFactor += ((isMoving ? 1 : 0) - weaponSwayFactor) * Math.min(1, delta * 10)
   const swayAmount = weaponSwayFactor * (aiming ? 0.003 : 0.008)
