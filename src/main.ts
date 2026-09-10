@@ -921,7 +921,8 @@ function resetCameraView(): void {
 }
 
 function getActiveAdsFov(): number {
-  return activeWeapon === 'awm' ? baseFov / scopeMagnification : adsFov
+  if (activeWeapon === 'awm') return baseFov / scopeMagnification
+  return THREE.MathUtils.clamp(baseFov * (adsFov / 65), 1, 179)
 }
 
 function setAiming(nextAiming: boolean): void {
