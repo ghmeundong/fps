@@ -50,6 +50,19 @@ button { font: inherit; }
 .electron-app .range-shell { inset: 0; }
 .electron-app .range { width: 100%; height: 100%; aspect-ratio: auto; border: 0; }
 .electron-app .brand, .electron-app .settings-button, .electron-app .fullscreen-button { display: none; }
+.electron-app .menu-view h1 { font-size: clamp(24px, 2.5vw, 38px); }
+.electron-app .menu-choice-list { width: min(680px, 100%); }
+.electron-app .menu-choice-button { padding: clamp(14px, 1.5vw, 24px) clamp(16px, 1.8vw, 28px); }
+.electron-app .menu-choice-button strong { font-size: clamp(12px, .9vw, 16px); }
+.electron-app .menu-choice-button span { font-size: clamp(10px, .75vw, 14px); }
+.electron-app .mode-layout { width: min(1100px, 100%); }
+.electron-app .mode-category-button, .electron-app .settings-category { padding: 13px 15px; font-size: clamp(11px, .7vw, 14px); }
+.electron-app .mode-menu .mode-button { padding: 13px 15px; font-size: clamp(11px, .7vw, 14px); }
+.electron-app .settings-layout { grid-template-columns: clamp(210px, 18vw, 280px) minmax(0, 760px); gap: clamp(28px, 3vw, 48px); }
+.electron-app .settings-group, .electron-app .settings-panel-group { max-width: 760px; }
+.electron-app .settings-group h2, .electron-app .weapon-preview h2 { font-size: clamp(12px, .75vw, 16px); }
+.electron-app .settings-group label { font-size: clamp(11px, .7vw, 14px); }
+.electron-app .settings-group select { padding: 9px; font-size: clamp(11px, .7vw, 14px); }
 #range-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .range::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(90deg, rgba(10,13,16,.55), transparent 28%, transparent 72%, rgba(10,13,16,.55)), linear-gradient(0deg, rgba(10,13,16,.35), transparent 28%); }
 .hud { position: absolute; z-index: 2; bottom: 28px; display: flex; flex-direction: column; gap: 5px; }
