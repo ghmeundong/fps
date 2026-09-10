@@ -5,7 +5,17 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 import { gsap } from 'gsap'
 import RAPIER from '@dimforge/rapier3d-compat'
 
+declare global {
+  interface Window {
+    electronAPI?: {
+      quit: () => void
+    }
+  }
+}
+
 await RAPIER.init()
+
+if (window.electronAPI) document.documentElement.classList.add('electron-app')
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 app.innerHTML = `
@@ -26,7 +36,7 @@ app.innerHTML = `
         <button class="settings-close" type="button" aria-label="Close settings" title="Close settings">×</button>
         <section class="menu-home menu-view is-visible" aria-label="Pause menu">
           <h1>PAUSED</h1>
-          <div class="menu-choice-list"><button class="menu-choice-button" id="menu-mode-button" type="button"><strong>MODE SELECT</strong><span>Choose a training scenario</span></button><button class="menu-choice-button" id="menu-settings-button" type="button"><strong>ENVIRONMENT SETTINGS</strong><span>Adjust your range configuration</span></button></div>
+          <div class="menu-choice-list"><button class="menu-choice-button" id="menu-mode-button" type="button"><strong>MODE SELECT</strong><span>Choose a training scenario</span></button><button class="menu-choice-button" id="menu-settings-button" type="button"><strong>ENVIRONMENT SETTINGS</strong><span>Adjust your range configuration</span></button><button class="menu-choice-button menu-exit-button" id="menu-exit-button" type="button"><strong>EXIT</strong><span>Close AIM / LAB</span></button></div>
         </section>
         <section class="mode-menu menu-view" aria-label="Mode selection">
           <h1>MODE SELECT</h1>
@@ -108,6 +118,7 @@ resetSettingsButton.addEventListener('click', () => {
 })
 const menuModeButton = document.querySelector<HTMLButtonElement>('#menu-mode-button')!
 const menuSettingsButton = document.querySelector<HTMLButtonElement>('#menu-settings-button')!
+const menuExitButton = document.querySelector<HTMLButtonElement>('#menu-exit-button')!
 const modeCategoryButtons = [...document.querySelectorAll<HTMLButtonElement>('.mode-category-button')]
 const modeCategoryPanels = [...document.querySelectorAll<HTMLElement>('[data-mode-panel]')]
 const modeCategoryNav = modeCategoryButtons[0]?.parentElement
@@ -1422,6 +1433,13 @@ settingsClose.addEventListener('click', () => {
 })
 menuModeButton.addEventListener('click', () => showMenuView('mode'))
 menuSettingsButton.addEventListener('click', () => showMenuView('settings'))
+menuExitButton.addEventListener('click', () => {
+  if (window.electronAPI) {
+    window.electronAPI.quit()
+    return
+  }
+  window.close()
+})
 settingsOverlay.addEventListener('click', (event) => {
   if (event.target === settingsOverlay) settingsClose.click()
 })
