@@ -1412,8 +1412,7 @@ function handleLockChange(): void {
   const locked = controls.isLocked
   if (!locked) releaseAim()
   range.classList.toggle('is-locked', locked)
-  if (locked) closeMenu()
-  else openMenu()
+  syncPauseMenu()
 }
 
 function showMenuView(view: 'home' | 'mode' | 'settings'): void {
@@ -1428,6 +1427,13 @@ function openMenu(): void {
   showMenuView('home')
   settingsOverlay.classList.add('is-open')
   settingsOverlay.setAttribute('aria-hidden', 'false')
+}
+
+function syncPauseMenu(): void {
+  const shouldShowPauseMenu = !controls.isLocked
+  if (shouldShowPauseMenu) showMenuView('home')
+  settingsOverlay.classList.toggle('is-open', shouldShowPauseMenu)
+  settingsOverlay.setAttribute('aria-hidden', shouldShowPauseMenu ? 'false' : 'true')
 }
 
 function closeMenu(): void {
