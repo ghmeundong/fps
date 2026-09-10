@@ -7,14 +7,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "electron:dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && electron electron/main.cjs\"",
-    "dist": "npm run build && electron-builder --win"
+    "dist": "npm run build && electron-builder --win",
+    "prepare": "husky"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
     "electron": "^38.1.0",
     "electron-builder": "^26.0.12",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
     "png-to-ico": "^3.0.2",
     "sharp": "^0.35.4",
     "typescript": "~6.0.2",

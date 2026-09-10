@@ -176,6 +176,7 @@ const awmWeaponOption = document.createElement('option')
 awmWeaponOption.value = 'awm'
 awmWeaponOption.textContent = 'L96A1'
 weaponSetting.append(awmWeaponOption)
+weaponSetting.querySelector<HTMLOptionElement>('option[value="pistol"]')!.textContent = 'M1911'
 const scopeMagnificationSetting = document.createElement('select')
 scopeMagnificationSetting.id = 'scope-magnification-setting'
 ;[4, 6, 8, 15, 20, 25].forEach((magnification) => {
@@ -742,7 +743,7 @@ const muzzleLocalPosition = new THREE.Vector3()
 const gunshotSounds: Record<WeaponId, HTMLAudioElement> = {
   pistol: new Audio(new URL('./assets/sounds/freesound_community-9mm-pistol-shoot-short-reverb-7152.mp3', import.meta.url).href),
   ak47: new Audio(new URL('./assets/sounds/freesound_community-ak-47-89833.mp3', import.meta.url).href),
-  awm: new Audio(new URL('./assets/sounds/freesound_community-gun-shots-from-a-distance-14-39756.mp3', import.meta.url).href),
+  awm: new Audio(new URL('./assets/sounds/freesound_community-rifle-gunshot-99749.mp3', import.meta.url).href),
 }
 let soundVolumeMultiplier = 0.5
 const gunshotReady: Record<WeaponId, boolean> = { pistol: false, ak47: false, awm: false }
