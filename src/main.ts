@@ -324,6 +324,16 @@ const awmScopeSensitivityLabel = document.createElement('label')
 awmScopeSensitivityLabel.textContent = 'SCOPE SENSITIVITY '
 awmScopeSensitivityLabel.append(awmScopeSensitivityValue, awmScopeSensitivitySetting)
 awmDisableScopeDuringDelayLabel.after(awmScopeSensitivityLabel)
+const scopeSettings = [
+  scopePreviewCard,
+  scopeMagnificationLabel,
+  awmScopeSensitivityLabel,
+  awmFireDelayLabel,
+  awmDisableScopeDuringDelayLabel,
+  scopeStyleLabel,
+  scopeColorLabel,
+  scopeThicknessLabel,
+]
 const adsFovSetting = document.querySelector<HTMLInputElement>('#ads-fov-setting')!
 const adsFovValue = document.querySelector<HTMLOutputElement>('#ads-fov-value')!
 const rawInputSetting = document.querySelector<HTMLInputElement>('#raw-input-setting')!
@@ -792,15 +802,10 @@ function applyWeaponProfile(weaponId: WeaponId): void {
 function applyWeaponSelection(): void {
   activeWeapon = resolveWeaponForMode(shootingMode)
   applyWeaponProfile(activeWeapon)
-  if (activeWeapon !== 'ak47') stopAutomaticFire()
-  scopeMagnificationLabel.hidden = activeWeapon !== 'awm'
-  awmScopeSensitivityLabel.hidden = activeWeapon !== 'awm'
-  awmFireDelayLabel.hidden = activeWeapon !== 'awm'
-  awmDisableScopeDuringDelayLabel.hidden = activeWeapon !== 'awm'
-  scopePreviewCard.hidden = activeWeapon !== 'awm'
-  scopeStyleLabel.hidden = activeWeapon !== 'awm'
-  scopeColorLabel.hidden = activeWeapon !== 'awm'
-  scopeThicknessLabel.hidden = activeWeapon !== 'awm'
+  const hasScope = activeWeapon === 'awm'
+  if (!hasScope) stopAutomaticFire()
+  scopeSettings.forEach((scopeSetting) => { scopeSetting.hidden = !hasScope })
+  if (!hasScope) scopeOverlay.classList.remove('is-visible')
   if (coltModel) coltModel.visible = activeWeapon === 'pistol'
   if (ak47Model) ak47Model.visible = activeWeapon === 'ak47'
   if (awmModel) awmModel.visible = activeWeapon === 'awm'
@@ -971,16 +976,26 @@ function updateScopeReticle(): void {
 }
 
 function handlePointerDown(event: PointerEvent): void {
-  if (event.button === 2 && controls.isLocked) {
-    aimButtonHeld = true
-    cancelAwmAimResume()
-    setAiming(true)
-  }
-  if (event.button === 0 && controls.isLocked && !aiming) {
+  if (event.button === 0 && controls.isLocked) {
     event.preventDefault()
+    leftButtonHeld = true
     if (activeWeapon === 'ak47') startAutomaticFire()
     else fireShot()
   }
+}
+
+function handleMouseDown(event: MouseEvent): void {
+  if (event.button === 0 && controls.isLocked && !leftButtonHeld) {
+    event.preventDefault()
+    leftButtonHeld = true
+    if (activeWeapon === 'ak47') startAutomaticFire()
+    else fireShot()
+  }
+  if (event.button !== 2 || !controls.isLocked) return
+  event.preventDefault()
+  aimButtonHeld = true
+  cancelAwmAimResume()
+  setAiming(true)
 }
 
 function handlePointerUp(event: PointerEvent): void {
@@ -997,6 +1012,7 @@ function releaseAim(): void {
 
 const akFireInterval = 60000 / 600
 let automaticFireTimer: number | null = null
+let leftButtonHeld = false
 
 function startAutomaticFire(): void {
   if (activeWeapon !== 'ak47' || automaticFireTimer !== null) return
@@ -1010,17 +1026,14 @@ function stopAutomaticFire(): void {
   automaticFireTimer = null
 }
 
-canvas.addEventListener('pointerdown', handlePointerDown)
-canvas.addEventListener('mousedown', (event) => {
-  if (event.button === 0 && controls.isLocked && aiming) {
-    event.preventDefault()
-    if (activeWeapon === 'ak47') startAutomaticFire()
-    else fireShot()
-  }
-})
+document.addEventListener('pointerdown', handlePointerDown)
+document.addEventListener('mousedown', handleMouseDown)
 document.addEventListener('pointerup', (event) => {
   handlePointerUp(event)
-  if (event.button === 0) stopAutomaticFire()
+  if (event.button === 0) {
+    leftButtonHeld = false
+    stopAutomaticFire()
+  }
 })
 document.addEventListener('pointercancel', () => {
   aimButtonHeld = false
@@ -1034,10 +1047,14 @@ window.addEventListener('mouseup', (event) => {
     cancelAwmAimResume()
     releaseAim()
   }
-  if (event.button === 0) stopAutomaticFire()
+  if (event.button === 0) {
+    leftButtonHeld = false
+    stopAutomaticFire()
+  }
 })
 window.addEventListener('blur', () => {
   aimButtonHeld = false
+  leftButtonHeld = false
   cancelAwmAimResume()
   stopAutomaticFire()
   releaseAim()
@@ -1899,6 +1916,8 @@ const cameraRight = new THREE.Vector3()
 const cameraUp = new THREE.Vector3()
 const impactOffset = new THREE.Vector3()
 const projectileAimDistance = 45
+const hitscanTargetCenter = new THREE.Vector3()
+const hitscanClosestPoint = new THREE.Vector3()
 let shotsFired = 0
 let shotsHit = 0
 let score = 0
@@ -1907,6 +1926,25 @@ function updateAimStats(): void {
   const accuracy = shotsFired === 0 ? '--.-' : ((shotsHit / shotsFired) * 100).toFixed(1)
   accuracyValue.textContent = `${accuracy}%`
   scoreValue.textContent = score.toString().padStart(6, '0')
+}
+
+function findHitscanTarget(): typeof target | null {
+  let closestTarget: typeof target | null = null
+  let closestDistance = Infinity
+  const ray = shotRaycaster.ray
+  for (const candidate of gridTargets) {
+    if (!candidate.visible) continue
+    candidate.getWorldPosition(hitscanTargetCenter)
+    const distanceAlongRay = hitscanTargetCenter.clone().sub(ray.origin).dot(ray.direction)
+    if (distanceAlongRay < 0 || distanceAlongRay >= closestDistance) continue
+    ray.at(distanceAlongRay, hitscanClosestPoint)
+    const hitRadius = targetRadius * currentTargetScaleMultiplier
+    if (hitscanClosestPoint.distanceToSquared(hitscanTargetCenter) <= hitRadius ** 2) {
+      closestTarget = candidate
+      closestDistance = distanceAlongRay
+    }
+  }
+  return closestTarget
 }
 
 function registerTargetHit(hitTarget: typeof target): void {
@@ -1967,7 +2005,7 @@ function createTracer(position: THREE.Vector3): void {
   } })
 }
 
-function createAwmTracer(start: THREE.Vector3, end: THREE.Vector3): void {
+function createHitscanTracer(start: THREE.Vector3, end: THREE.Vector3): void {
   const direction = end.clone().sub(start)
   const distance = direction.length()
   direction.normalize()
@@ -2012,6 +2050,25 @@ function createAwmTracer(start: THREE.Vector3, end: THREE.Vector3): void {
       tracer.geometry = nextGeometry
       tracerGeometry.dispose()
       tracerGeometry = nextGeometry
+    },
+  })
+}
+
+function createLaserTracer(start: THREE.Vector3, end: THREE.Vector3): void {
+  const curve = new THREE.LineCurve3(start, end)
+  const geometry = new THREE.TubeGeometry(curve, 1, 0.012, 6, false)
+  const material = new THREE.MeshBasicMaterial({ color: '#fff4a3', transparent: true, opacity: 0.95, depthTest: true, depthWrite: false, fog: false })
+  const laser = new THREE.Mesh(geometry, material)
+  laser.renderOrder = 10
+  scene.add(laser)
+  gsap.to(material, {
+    opacity: 0,
+    duration: 0.09,
+    ease: 'power2.out',
+    onComplete: () => {
+      scene.remove(laser)
+      geometry.dispose()
+      material.dispose()
     },
   })
 }
@@ -2069,17 +2126,25 @@ function fireShot(): void {
   aimPoint.addScaledVector(cameraUp, verticalSpread)
   shotDirection.copy(aimPoint).sub(shotOrigin).normalize()
   if (fireMode === 'hitscan') {
+    gridTargets.forEach((candidate) => candidate.updateMatrixWorld(true))
     shotRaycaster.set(cameraOrigin, shotDirection)
-    const hit = shotRaycaster.intersectObjects(gridTargets.filter((candidate) => candidate.visible), false)[0]
-    if (activeWeapon === 'awm') {
-      const floorDistance = shotDirection.y < -0.0001 ? (cameraOrigin.y - 0.01) / -shotDirection.y : Infinity
-      const floorIsFirstHit = Number.isFinite(floorDistance) && floorDistance > 0 && (!hit || floorDistance < hit.distance)
-      const tracerEnd = floorIsFirstHit
-        ? cameraOrigin.clone().addScaledVector(shotDirection, floorDistance)
-        : aimPoint.clone()
-      const tracerOffset = cameraUp.clone().multiplyScalar(0.08)
-      createAwmTracer(tracerEnd.clone().add(tracerOffset), shotOrigin.clone().add(tracerOffset))
-    }
+    shotRaycaster.near = 0
+    shotRaycaster.far = Math.max(camera.far, 10000)
+    const meshHit = shotRaycaster.intersectObjects(gridTargets.filter((candidate) => candidate.visible), false)[0]
+    const hitTarget = findHitscanTarget()
+    const hit = meshHit && hitTarget
+      ? meshHit.distance <= shotRaycaster.ray.origin.distanceTo(hitTarget.position) ? meshHit : { object: hitTarget, distance: 0 }
+      : meshHit ?? (hitTarget ? { object: hitTarget, distance: 0 } : undefined)
+    const floorDistance = shotDirection.y < -0.0001 ? (cameraOrigin.y - 0.01) / -shotDirection.y : Infinity
+    const floorIsFirstHit = Number.isFinite(floorDistance) && floorDistance > 0 && (!hit || floorDistance < hit.distance)
+    const tracerEnd = floorIsFirstHit
+      ? cameraOrigin.clone().addScaledVector(shotDirection, floorDistance)
+      : aimPoint.clone()
+    const tracerOffset = cameraUp.clone().multiplyScalar(0.08)
+    const tracerStart = shotOrigin.clone().add(tracerOffset)
+    const tracerFinish = tracerEnd.clone().add(tracerOffset)
+    if (activeWeapon === 'awm') createHitscanTracer(tracerFinish, tracerStart)
+    else createLaserTracer(tracerStart, tracerFinish)
     if (hit) registerTargetHit(hit.object as typeof target)
     updateAimStats()
     if (activeWeapon === 'awm') {
