@@ -804,7 +804,10 @@ function applyWeaponSelection(): void {
   applyWeaponProfile(activeWeapon)
   const hasScope = activeWeapon === 'awm'
   if (!hasScope) stopAutomaticFire()
-  scopeSettings.forEach((scopeSetting) => { scopeSetting.hidden = !hasScope })
+  scopeSettings.forEach((scopeSetting) => {
+    scopeSetting.hidden = !hasScope
+    scopeSetting.style.setProperty('display', hasScope ? '' : 'none', hasScope ? '' : 'important')
+  })
   if (!hasScope) scopeOverlay.classList.remove('is-visible')
   if (coltModel) coltModel.visible = activeWeapon === 'pistol'
   if (ak47Model) ak47Model.visible = activeWeapon === 'ak47'
