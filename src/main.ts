@@ -138,6 +138,7 @@ if (modeCategoryNav && modeCategoryContent) {
   modeCategoryButtons.push(snipingButton)
   modeCategoryPanels.push(snipingPanel)
 }
+let activeMenuView: 'home' | 'mode' | 'settings' = 'home'
 const weaponPreviewCanvas = document.querySelector<HTMLCanvasElement>('#weapon-preview-canvas')!
 const fullscreenButton = document.querySelector<HTMLButtonElement>('.fullscreen-button')!
 const accuracyValue = document.querySelector<HTMLElement>('#accuracy-value')!
@@ -1377,9 +1378,24 @@ function updateFullscreenButton(): void {
 
 function handleKeyDown(event: KeyboardEvent): void {
   if (event.code === 'Escape') {
+    if (controls.isLocked) {
+      event.preventDefault()
+      controls.unlock()
+      return
+    }
+    if (window.electronAPI) {
+      event.preventDefault()
+      return
+    }
+    if (document.fullscreenElement) {
+      event.preventDefault()
+      void document.exitFullscreen()
+      return
+    }
     event.preventDefault()
-    if (controls.isLocked) controls.unlock()
-    else enterGame()
+    if (!settingsOverlay.classList.contains('is-open')) openMenu()
+    else if (activeMenuView === 'home') closeMenu()
+    else showMenuView('home')
     return
   }
   keys.add(event.code)
@@ -1394,16 +1410,14 @@ function handleKeyUp(event: KeyboardEvent): void {
 
 function handleLockChange(): void {
   const locked = controls.isLocked
+  if (!locked) releaseAim()
   range.classList.toggle('is-locked', locked)
-  if (locked) {
-    closeMenu()
-    return
-  }
-  releaseAim()
-  openMenu()
+  if (locked) closeMenu()
+  else openMenu()
 }
 
 function showMenuView(view: 'home' | 'mode' | 'settings'): void {
+  activeMenuView = view
   menuHome.classList.toggle('is-visible', view === 'home')
   modeMenu.classList.toggle('is-visible', view === 'mode')
   settingsContent.classList.toggle('is-visible', view === 'settings')
@@ -1430,7 +1444,9 @@ canvas.addEventListener('click', enterGame)
 settingsButton.addEventListener('click', () => {
   openMenu()
 })
-settingsClose.addEventListener('click', enterGame)
+settingsClose.addEventListener('click', () => {
+  closeMenu()
+})
 menuModeButton.addEventListener('click', () => showMenuView('mode'))
 menuSettingsButton.addEventListener('click', () => showMenuView('settings'))
 menuExitButton.addEventListener('click', () => {
@@ -1441,7 +1457,7 @@ menuExitButton.addEventListener('click', () => {
   window.close()
 })
 settingsOverlay.addEventListener('click', (event) => {
-  if (event.target === settingsOverlay) enterGame()
+  if (event.target === settingsOverlay) settingsClose.click()
 })
 fullscreenButton.addEventListener('click', () => { void toggleFullscreen() })
 document.addEventListener('fullscreenchange', updateFullscreenButton)
@@ -1449,7 +1465,6 @@ document.addEventListener('keydown', handleKeyDown)
 document.addEventListener('keyup', handleKeyUp)
 controls.addEventListener('lock', handleLockChange)
 controls.addEventListener('unlock', handleLockChange)
-openMenu()
 
 function getRenderPixelRatio(): number {
   return Math.min(window.devicePixelRatio * resolutionScale, 5)
