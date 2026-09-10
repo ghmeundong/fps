@@ -49,7 +49,7 @@ button { font: inherit; }
 .electron-app body { overflow: hidden; }
 .electron-app .range-shell { inset: 0; }
 .electron-app .range { width: 100%; height: 100%; aspect-ratio: auto; border: 0; }
-.electron-app .brand, .electron-app .settings-button { display: none; }
+.electron-app .brand, .electron-app .settings-button, .electron-app .fullscreen-button { display: none; }
 #range-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .range::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(90deg, rgba(10,13,16,.55), transparent 28%, transparent 72%, rgba(10,13,16,.55)), linear-gradient(0deg, rgba(10,13,16,.35), transparent 28%); }
 .hud { position: absolute; z-index: 2; bottom: 28px; display: flex; flex-direction: column; gap: 5px; }
@@ -118,18 +118,18 @@ button { font: inherit; }
 .settings-overlay::-webkit-scrollbar-track { background: rgba(17, 23, 29, .72); }
 .settings-overlay::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 0; background: #53616b; background-clip: padding-box; }
 .settings-overlay::-webkit-scrollbar-thumb:hover { background: #82909a; background-clip: padding-box; }
-.menu-view { display: none; position: absolute; inset: 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 34px 76px 42px; color: #f1f4f5; }
+.menu-view { display: none; position: absolute; inset: 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: clamp(24px, 5vw, 52px) clamp(24px, 7vw, 76px) clamp(32px, 5vw, 42px); color: #f1f4f5; }
 .menu-view.is-visible { display: flex; }
 .menu-kicker { margin-bottom: 8px; color: #ed654e; font-size: 9px; letter-spacing: 2px; }
-.menu-view h1 { margin: 0 0 26px; color: #ffffff; font-size: 18px; font-weight: 400; letter-spacing: 3px; }
-.menu-choice-list { display: grid; width: min(460px, 100%); gap: 4px; }
-.menu-choice-button { display: flex; flex-direction: column; gap: 5px; padding: 11px 12px; border: 1px solid transparent; color: #82909a; background: transparent; cursor: pointer; text-align: left; transition: border-color .2s, color .2s, background .2s; }
+.menu-view h1 { margin: 0 0 clamp(20px, 3vw, 32px); color: #ffffff; font-size: clamp(18px, 2.2vw, 30px); font-weight: 400; letter-spacing: clamp(2px, .35vw, 4px); }
+.menu-choice-list { display: grid; width: min(560px, 100%); gap: clamp(4px, .5vw, 8px); }
+.menu-choice-button { display: flex; flex-direction: column; gap: clamp(5px, .5vw, 8px); padding: clamp(11px, 1.2vw, 18px) clamp(12px, 1.4vw, 20px); border: 1px solid transparent; color: #82909a; background: transparent; cursor: pointer; text-align: left; transition: border-color .2s, color .2s, background .2s; }
 .menu-choice-button:hover { border-color: #ffffff; background: rgba(255, 255, 255, .12); }
 .menu-choice-button:hover strong { color: #ffffff; }
-.menu-choice-button strong { font-size: 10px; font-weight: 500; letter-spacing: 1px; }
-.menu-choice-button span { color: #64717a; font-size: 9px; letter-spacing: 1px; }
+.menu-choice-button strong { font-size: clamp(10px, .75vw, 14px); font-weight: 500; letter-spacing: clamp(1px, .12vw, 2px); }
+.menu-choice-button span { color: #64717a; font-size: clamp(9px, .65vw, 12px); letter-spacing: clamp(1px, .1vw, 1.5px); }
 .mode-menu h1 { margin-bottom: 26px; }
-.mode-layout { display: grid; width: min(680px, 100%); grid-template-columns: 190px minmax(300px, 1fr); gap: 34px; }
+.mode-layout { display: grid; width: min(900px, 100%); grid-template-columns: clamp(150px, 20vw, 220px) minmax(0, 1fr); gap: clamp(18px, 3vw, 34px); }
 .mode-category-nav { display: flex; flex-direction: column; gap: 4px; }
 .mode-category-button { padding: 10px 11px; border: 1px solid transparent; color: #82909a; background: transparent; cursor: pointer; text-align: left; font-size: 9px; letter-spacing: 1px; }
 .mode-category-button:hover, .mode-category-button.is-active { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
@@ -141,7 +141,7 @@ button { font: inherit; }
 .mode-menu .mode-button { padding: 10px 12px; text-align: left; }
 .settings-close { position: absolute; z-index: 4; top: 24px; right: 26px; width: 34px; height: 34px; padding: 0; border: 1px solid #293139; color: #f1f4f5; background: rgba(17, 23, 29, .6); cursor: pointer; font-size: 22px; line-height: 1; }
 .settings-close:hover { border-color: #ffffff; color: #ffffff; background: rgba(255, 255, 255, .12); }
-.settings-content { display: none; min-width: 680px; padding: 34px 76px 42px; color: #f1f4f5; }
+.settings-content { display: none; min-width: 0; width: min(1100px, 100%); padding: clamp(24px, 5vw, 52px) clamp(24px, 7vw, 76px) clamp(32px, 5vw, 42px); color: #f1f4f5; }
 .settings-content.is-visible { display: block; }
 .settings-heading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px; letter-spacing: 3px; font-size: 18px; }
 .settings-reset-button { margin-left: auto; padding: 8px 12px; border: 1px solid #394650; color: #c7d0d5; background: transparent; cursor: pointer; font: inherit; font-size: 10px; letter-spacing: 1px; }

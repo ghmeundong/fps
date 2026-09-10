@@ -1381,7 +1381,8 @@ function handleKeyDown(event: KeyboardEvent): void {
     if (window.electronAPI) {
       event.preventDefault()
       if (controls.isLocked) controls.unlock()
-      openMenu()
+      if (!settingsOverlay.classList.contains('is-open')) openMenu()
+      else showMenuView('home')
       return
     }
     if (document.fullscreenElement) {
@@ -1409,6 +1410,7 @@ function handleLockChange(): void {
   const locked = controls.isLocked
   if (!locked) releaseAim()
   range.classList.toggle('is-locked', locked)
+  if (window.electronAPI && !locked && !settingsOverlay.classList.contains('is-open')) openMenu()
 }
 
 function showMenuView(view: 'home' | 'mode' | 'settings'): void {
