@@ -1386,7 +1386,7 @@ function handleKeyDown(event: KeyboardEvent): void {
     if (window.electronAPI) {
       event.preventDefault()
       if (settingsOverlay.classList.contains('is-open')) {
-        if (activeMenuView === 'home') resumeGame()
+        if (activeMenuView === 'home') enterGame()
         else showMenuView('home')
       } else {
         openMenu()
@@ -1451,11 +1451,6 @@ function closeMenu(): void {
 function enterGame(): void {
   closeMenu()
   lockPointer()
-}
-
-function resumeGame(): void {
-  closeMenu()
-  if (!controls.isLocked) lockPointer()
 }
 
 canvas.addEventListener('click', enterGame)
