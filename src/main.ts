@@ -1430,7 +1430,8 @@ function openMenu(): void {
 }
 
 function syncPauseMenu(): void {
-  const shouldShowPauseMenu = !controls.isLocked
+  const isPointerLockedToGameCanvas = document.pointerLockElement === canvas
+  const shouldShowPauseMenu = !isPointerLockedToGameCanvas
   if (shouldShowPauseMenu) showMenuView('home')
   settingsOverlay.classList.toggle('is-open', shouldShowPauseMenu)
   settingsOverlay.setAttribute('aria-hidden', shouldShowPauseMenu ? 'false' : 'true')
@@ -1469,6 +1470,7 @@ fullscreenButton.addEventListener('click', () => { void toggleFullscreen() })
 document.addEventListener('fullscreenchange', updateFullscreenButton)
 document.addEventListener('keydown', handleKeyDown)
 document.addEventListener('keyup', handleKeyUp)
+document.addEventListener('pointerlockchange', syncPauseMenu)
 controls.addEventListener('lock', handleLockChange)
 controls.addEventListener('unlock', handleLockChange)
 
