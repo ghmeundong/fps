@@ -49,6 +49,7 @@ button { font: inherit; }
 .electron-app body { overflow: hidden; }
 .electron-app .range-shell { inset: 0; }
 .electron-app .range { width: 100%; height: 100%; aspect-ratio: auto; border: 0; }
+.electron-app .brand, .electron-app .settings-button { display: none; }
 #range-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .range::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(90deg, rgba(10,13,16,.55), transparent 28%, transparent 72%, rgba(10,13,16,.55)), linear-gradient(0deg, rgba(10,13,16,.35), transparent 28%); }
 .hud { position: absolute; z-index: 2; bottom: 28px; display: flex; flex-direction: column; gap: 5px; }

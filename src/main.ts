@@ -1378,6 +1378,12 @@ function updateFullscreenButton(): void {
 
 function handleKeyDown(event: KeyboardEvent): void {
   if (event.code === 'Escape') {
+    if (window.electronAPI) {
+      event.preventDefault()
+      if (controls.isLocked) controls.unlock()
+      openMenu()
+      return
+    }
     if (document.fullscreenElement) {
       event.preventDefault()
       void document.exitFullscreen()
