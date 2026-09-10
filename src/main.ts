@@ -1385,6 +1385,12 @@ function handleKeyDown(event: KeyboardEvent): void {
     }
     if (window.electronAPI) {
       event.preventDefault()
+      if (settingsOverlay.classList.contains('is-open')) {
+        if (activeMenuView === 'home') enterGame()
+        else showMenuView('home')
+      } else {
+        openMenu()
+      }
       return
     }
     if (document.fullscreenElement) {
@@ -1452,7 +1458,8 @@ settingsButton.addEventListener('click', () => {
   openMenu()
 })
 settingsClose.addEventListener('click', () => {
-  closeMenu()
+  if (window.electronAPI) enterGame()
+  else closeMenu()
 })
 menuModeButton.addEventListener('click', () => showMenuView('mode'))
 menuSettingsButton.addEventListener('click', () => showMenuView('settings'))

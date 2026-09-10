@@ -94,10 +94,10 @@ button { font: inherit; }
 .crosshair-preview { pointer-events: none; }
 .hit-marker-preview { pointer-events: none; }
 .scope-preview-overlay { display: block; }
-.scope-overlay { --scope-radius: 180px; position: absolute; z-index: 4; inset: 0; pointer-events: none; display: none; background: radial-gradient(circle at center, transparent 0 var(--scope-radius), rgba(0, 0, 0, .94) calc(var(--scope-radius) + 2px) 100%); }
+.scope-overlay { --scope-radius: 260px; position: absolute; z-index: 4; inset: 0; pointer-events: none; display: none; background: radial-gradient(circle at center, transparent 0 var(--scope-radius), rgba(0, 0, 0, .94) calc(var(--scope-radius) + 2px) 100%); }
 .scope-overlay.is-visible { display: block; }
 .scope-reticle { position: absolute; top: 50%; left: 50%; width: calc(var(--scope-radius) * 2); height: calc(var(--scope-radius) * 2); transform: translate(-50%, -50%); border: 2px solid rgba(0, 0, 0, .9); border-radius: 50%; box-shadow: 0 0 0 1px rgba(255, 86, 86, .8), inset 0 0 0 1px rgba(255, 86, 86, .65); }
-.scope-preview-overlay { --scope-radius: 40px; }
+.scope-preview-overlay { --scope-radius: 52px; }
 .scope-overlay { --scope-color: #ff3636; --scope-thickness: 1px; }
 .scope-reticle::before, .scope-reticle::after, .scope-reticle span, .scope-reticle i { position: absolute; content: ''; background: var(--scope-color); box-shadow: 0 0 4px var(--scope-color); }
 .scope-reticle::before { width: var(--scope-thickness); height: 43%; top: 0; left: 50%; }
