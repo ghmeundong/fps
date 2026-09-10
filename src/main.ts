@@ -1355,7 +1355,6 @@ const playerHeight = 1.6
 const gravity = 18
 const jumpVelocity = 7
 let verticalVelocity = 0
-let hasPointerLocked = false
 
 function lockPointer(): void {
   controls.lock(rawInputEnabled)
@@ -1411,8 +1410,6 @@ function handleLockChange(): void {
   const locked = controls.isLocked
   if (!locked) releaseAim()
   range.classList.toggle('is-locked', locked)
-  if (locked) hasPointerLocked = true
-  if (window.electronAPI && hasPointerLocked && !locked && !settingsOverlay.classList.contains('is-open')) openMenu()
 }
 
 function showMenuView(view: 'home' | 'mode' | 'settings'): void {
@@ -1434,7 +1431,12 @@ function closeMenu(): void {
   settingsOverlay.setAttribute('aria-hidden', 'true')
 }
 
-canvas.addEventListener('click', lockPointer)
+function enterGame(): void {
+  closeMenu()
+  lockPointer()
+}
+
+canvas.addEventListener('click', enterGame)
 settingsButton.addEventListener('click', () => {
   openMenu()
 })
